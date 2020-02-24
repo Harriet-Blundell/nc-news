@@ -108,6 +108,79 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+describe.only("makeRefObj", () => {
+  it("returns an empty object if passed an empty array", () => {
+    const actual = makeRefObj([]);
+    const expected = {};
+    expect(actual).to.deep.equal(expected);
+  });
+  it("returns a single reference object with the article's title and article's id as a key-value pair when passed a single array object", () => {
+    const articleArr = [
+      {
+        article_id: 3,
+        title: "Eight pug gifs that remind me of mitch",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "some gifs",
+        created_at: 1289996514171
+      }
+    ];
+    const actual = makeRefObj(articleArr);
+
+    const expected = {
+      "Eight pug gifs that remind me of mitch": 3
+    };
+
+    expect(actual).to.deep.equal(expected);
+  });
+  it("returns a single reference object with the article's title and article's id as a key-value pair when passed multiple array objects", () => {
+    const articleArr = [
+      {
+        article_id: 6,
+        title: "A",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "Delicious tin of cat food",
+        created_at: 911564514171
+      },
+      {
+        article_id: 7,
+        title: "Z",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "I was hungry.",
+        created_at: 785420514171
+      }
+    ];
+    const actual = makeRefObj(articleArr);
+
+    const expected = {
+      A: 6,
+      Z: 7
+    };
+
+    expect(actual).to.deep.equal(expected);
+  });
+  it("does not mutate the original input", () => {
+    const articleArr = [
+      {
+        article_id: 3,
+        title: "Eight pug gifs that remind me of mitch",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "some gifs",
+        created_at: 1289996514171
+      }
+    ];
+
+    const articleArrCopy = articleArr.map(article => {
+      return { ...article };
+    });
+
+    const actual = makeRefObj(articleArr);
+
+    expect(articleArr).to.deep.equal(articleArrCopy);
+  });
+});
 
 describe("formatComments", () => {});
