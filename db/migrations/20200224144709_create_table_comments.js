@@ -1,5 +1,5 @@
 exports.up = function(knex) {
-  return knex.schema.createTable("comment", commentTable => {
+  return knex.schema.createTable("comments", commentTable => {
     commentTable.increments("comment_id").primary();
     commentTable
       .string("author")
