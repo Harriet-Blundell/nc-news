@@ -108,7 +108,7 @@ describe("formatDates", () => {
   });
 });
 
-describe.only("makeRefObj", () => {
+describe("makeRefObj", () => {
   it("returns an empty object if passed an empty array", () => {
     const actual = makeRefObj([]);
     const expected = {};
@@ -183,4 +183,119 @@ describe.only("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("returns an empty array when passed an empty array and a reference object", () => {
+    const actual = formatComments([], {});
+    const expected = [];
+    expect(actual).to.deep.equal(expected);
+  });
+  it("format comments in an array object when passed a single array object", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+
+    const referenceObj = {
+      "Living in the shadow of a great man": 2
+    };
+
+    const output = formatComments(comments, referenceObj);
+
+    it('changes the property "created_by" to "author"', () => {
+      expect(output).to.include.all.keys("author");
+      expect(output).to.not.have.key("created_by");
+    });
+    it('changes "belong_to" property to "article_id" key and changes the value of the new article_id key to be the id corresponding to the original title value provided', () => {
+      expect(output).to.include.all.keys("article_id");
+      expect(output).to.not.have.key("belongs_to");
+      expect(output.article_id).to.equal(2);
+    });
+    it('converts the "created_at" timestamp into a javascript date object', () => {
+      expect(output.created_at).to.deep.equal(new Date(1479818163389));
+    });
+    it('the "body" and the "votes" properties maintain their original property and values', () => {
+      expect(output.body).to.deep.equal(
+        "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+      );
+      expect(output.votes).to.equal(14);
+      expect(output).to.include.all.keys("body", "votes");
+    });
+  });
+  it("formats comments into an array object when passed multiple array comment objects", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      },
+      {
+        body: "I am 100% sure that we're not completely sure.",
+        belongs_to: "UNCOVERED: catspiracy to bring down democracy",
+        created_by: "butter_bridge",
+        votes: 1,
+        created_at: 1069850163389
+      }
+    ];
+
+    const expected = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        article_id: 2,
+        author: "butter_bridge",
+        votes: 14,
+        created_at: new Date(1479818163389)
+      },
+      {
+        body: "I am 100% sure that we're not completely sure.",
+        article_id: 5,
+        author: "butter_bridge",
+        votes: 1,
+        created_at: new Date(1069850163389)
+      }
+    ];
+
+    const referenceObj = {
+      "Living in the shadow of a great man": 2,
+      "UNCOVERED: catspiracy to bring down democracy": 5
+    };
+
+    const actual = formatComments(comments, referenceObj);
+
+    expect(actual).to.eql(expected);
+  });
+  it("does mutate the original input", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      },
+      {
+        body: "I am 100% sure that we're not completely sure.",
+        belongs_to: "UNCOVERED: catspiracy to bring down democracy",
+        created_by: "butter_bridge",
+        votes: 1,
+        created_at: 1069850163389
+      }
+    ];
+
+    const commentCopy = comments.map(comment => {
+      return { ...comment };
+    });
+
+    expect(comments).to.deep.equal(commentCopy);
+  });
+});

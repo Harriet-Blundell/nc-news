@@ -38,4 +38,24 @@ exports.makeRefObj = list => {
   return refObj;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+  if (comments.length === 0) {
+    return [];
+  }
+
+  const newComments = [];
+
+  comments.forEach(originalObj => {
+    newComments.push({ ...originalObj });
+  });
+
+  newComments.forEach(commentObj => {
+    commentObj.author = commentObj.created_by;
+    commentObj.article_id = articleRef[commentObj.belongs_to];
+    commentObj.created_at = new Date(commentObj.created_at);
+    delete commentObj.created_by;
+    delete commentObj.belongs_to;
+  });
+
+  return newComments;
+};
