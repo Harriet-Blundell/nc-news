@@ -106,6 +106,15 @@ describe("/api", () => {
           expect(response.body.article.votes).to.equal(newVote.inc_votes);
         });
     });
+    xit("PATCH: 200 responds with an error and appropriate message when the request body does not have inc_votes", () => {
+      return request(app)
+        .patch("/api/article/2")
+        .send()
+        .expect(200)
+        .then(response => {
+          console.log(response, "in the test");
+        });
+    });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
       const newVote = {
         inc_votes: "banana"
@@ -145,40 +154,21 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
-    xit("PATCH ERROR: 200 responds with an error and appropriate message when the request body does not have inc_votes", () => {
-      const updateVote = {
-        name: "Mitch"
-      };
-
-      return (
-        request(app)
-          .patch("/api/article/2")
-          .send(updateVote)
-          // .expect(200)
-          .then(response => {
-            console.log(response, "in the test");
-            expect(response.body.msg).to.equal("Bad Request");
-          })
-      );
-    });
   });
 
-  describe.only("POST: /articles/:article_id/comments", () => {
+  describe.only("POST: /comments", () => {
     it("POST: 200 posts a new comment in the comments table when passed an article id", () => {
-      const newComment = {
-        username: "butter_bridge",
-        body: "this is a new comment"
-      };
-
-      return (
-        request(app)
-          .post("/api/articles/2/comments")
-          .send(newComment)
-          // .expect(200)
-          .then(response => {
-            console.log(response, "in the test");
-          })
-      );
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "butter_bridge",
+          body: "this is a new comment"
+        })
+        .expect(200)
+        .then(response => {
+          console.log(response);
+          // console.log(response, "in the test");
+        });
     });
   });
 });

@@ -29,10 +29,8 @@ function patchArticleVote(req, res, next) {
 }
 
 function postArticleComment(req, res, next) {
-  const { article_id } = req.params;
-
-  createArticleComment(article_id, req.body).then(comment => {
-    res.status(201).send(comment);
+  createArticleComment(req.params, req.body).then(comment => {
+    res.status(201).send({ comment });
   });
 }
 

@@ -17,6 +17,8 @@ function fetchArticleId(article_id) {
 }
 
 function updateArticleVote(body, article_id) {
+  console.log(body, "in the model");
+
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", body.inc_votes)
@@ -29,9 +31,13 @@ function updateArticleVote(body, article_id) {
     });
 }
 
-function createArticleComment(article_id, body) {
+function createArticleComment(article_id, newComment) {
   return connection
-    .insert(body)
+    .insert({
+      author: newComment.username,
+      article_id: article_id,
+      body: newComment.body
+    })
     .into("comments")
     .returning("*")
     .then(result => {
