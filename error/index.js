@@ -14,7 +14,9 @@ function handlePSQLErrors(err, req, res, next) {
   console.log(err.code, "psql error");
 
   const psqlErrCodes = {
-    "22P02": { msg: "Bad Request", status: 400 }
+    "22P02": { msg: "Bad Request", status: 400 },
+    "23503": { msg: "Not Found", status: 404 },
+    "23502": { msg: "Bad Request", status: 400 }
   };
 
   if (err.code !== undefined) {

@@ -157,7 +157,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("POST: /comments", () => {
+  describe("POST: /:articles_id/comments", () => {
     it("POST: 201 posts a new comment in the comments table when passed an article id and a request body with username, and body inside", () => {
       return request(app)
         .post("/api/articles/9/comments")
@@ -165,8 +165,8 @@ describe("/api", () => {
           username: "butter_bridge",
           body: "I am trying to make a post request"
         })
+        .expect(201)
         .then(response => {
-          console.log(response.body, "in the test");
           expect(response.body.comment).to.have.all.keys(
             "author",
             "comment_id",
@@ -178,5 +178,67 @@ describe("/api", () => {
           expect(response.body.comment).to.be.an("object");
         });
     });
+    it("POST ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent article id", () => {
+      return request(app)
+        .post("/api/articles/99/comments")
+        .send({
+          username: "butter_bridge",
+          body: "I am testing my error handling skills"
+        })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("POST ERROR: 404 responds with an error and appropriate message when passed a invalid parameter in as a value on the username property in the request body", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({
+          username: 500,
+          body: "I hope this fails"
+        })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("POST ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent username on the request body", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({
+          username: "not_a_real_username",
+          body: "I really hope this fails"
+        })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when passed a request body without username as a property", () => {
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send({
+          name: "butter_bridge",
+          body: "Coding is fun"
+        })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("POST ERROR: responds with an error and appropriate message when passed a request body that does not include username", () => {
+      return request(app)
+        .post("/api/articles/7/comments")
+        .send({
+          body: "Hello World"
+        })
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+  });
+
+  describe.only("GET: /:article_id/comments", () => {
+    it("", () => {});
   });
 });

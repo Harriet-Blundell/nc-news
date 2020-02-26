@@ -29,9 +29,13 @@ function patchArticleVote(req, res, next) {
 }
 
 function postArticleComment(req, res, next) {
-  createArticleComment(req.params.article_id, req.body).then(comment => {
-    res.status(201).send({ comment });
-  });
+  createArticleComment(req.params.article_id, req.body)
+    .then(comment => {
+      res.status(201).send({ comment });
+    })
+    .catch(err => {
+      next(err);
+    });
 }
 
 module.exports = { getArticleId, patchArticleVote, postArticleComment };
