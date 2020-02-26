@@ -95,7 +95,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
-    it("PATCH: 201 responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by", () => {
+    it("PATCH: 201 responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const newVote = {
         inc_votes: 1
       };
@@ -241,7 +241,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("GET: /:article_id/comments", () => {
+  describe("GET: /:article_id/comments", () => {
     it("GET: 200 responds with an array of comments for the given article_id that is sorted by and ordered by the queries passed in", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=author&order_by=asc")
@@ -299,7 +299,73 @@ describe("/api", () => {
     });
   });
 
-  describe("", () => {
-    it("", () => {});
+  xdescribe("/api/articles", () => {
+    it("GET: 200 responds with an array of article objects when passed ", () => {});
+  });
+
+  describe.only("PATCH: /api/comments/:comment_id", () => {
+    it("PATCH: 201 responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
+      const updateComment = {
+        inc_votes: 1
+      };
+
+      return request(app)
+        .patch("/api/comments/3")
+        .send(updateComment)
+        .expect(201)
+        .then(response => {
+          expect(response.body.comment).to.be.an("object");
+          expect(response.body.comment).to.include.all.keys([
+            "comment_id",
+            "author",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          ]);
+          expect(response.body.comment.votes).to.equal(101);
+        });
+    });
+    it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
+      const newVote = {
+        inc_votes: "banana"
+      };
+
+      return request(app)
+        .patch("/api/comments/7")
+        .send(newVote)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("PATCH ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
+      const newVote = {
+        inc_votes: 7
+      };
+
+      return request(app)
+        .patch("/api/comments/9999")
+        .send(newVote)
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
+      const newVote = {
+        inc_votes: 11
+      };
+
+      return request(app)
+        .patch("/api/comments/banana")
+        .send(newVote)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
   });
 });
+
+// DO PROMISE.ALL IN CASE THE CLIENT REQUEST ROUTES THAT ARE NOT ALLOWED!
