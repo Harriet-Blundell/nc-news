@@ -46,7 +46,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Username not found");
         });
     });
-    it("GET ERROR: 400 responds with an error and appropriate message when passed a number as username", () => {
+    it("GET ERROR: 400 responds with an error and appropriate message when passed an invalid parameter as username", () => {
       return request(app)
         .get("/api/users/999")
         .expect(400)
@@ -56,7 +56,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/api/articles/:article_id", () => {
+  describe("/api/articles/:article_id", () => {
     it("GET: 200 responds with an article object when passed an article id", () => {
       return request(app)
         .get("/api/articles/1")
@@ -76,21 +76,109 @@ describe("/api", () => {
           expect(response.body.article.comment_count).to.equal(13);
         });
     });
-    it("GET ERROR: 404 responds with an error and appropriate message when passed an article id that does not exist", () => {
+    it("GET ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
       return request(app)
         .get("/api/articles/900")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("404 not found");
+          expect(response.body.msg).to.equal("Not found");
         });
     });
-    it("GET ERROR: 400 responds with an error and appropriate message when passed an article id that is not a number", () => {
+    it("GET ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
       return request(app)
         .get("/api/articles/notANumber")
         .expect(400)
         .then(response => {
-          expect(response.body.msg).to.equal("400 Bad Request");
+          expect(response.body.msg).to.equal("Bad Request");
         });
+    });
+    it("PATCH: 201 responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by", () => {
+      const newVote = {
+        inc_votes: 1
+      };
+
+      return request(app)
+        .patch("/api/articles/4")
+        .send(newVote)
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("object");
+          expect(response.body.article.votes).to.equal(newVote.inc_votes);
+        });
+    });
+    it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
+      const newVote = {
+        inc_votes: "banana"
+      };
+
+      return request(app)
+        .patch("/api/articles/7")
+        .send(newVote)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("PATCH ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
+      const newVote = {
+        inc_votes: 7
+      };
+
+      return request(app)
+        .patch("/api/articles/900")
+        .send(newVote)
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("ID not found");
+        });
+    });
+    it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
+      const newVote = {
+        inc_votes: 11
+      };
+
+      return request(app)
+        .patch("/api/articles/banana")
+        .send(newVote)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    xit("PATCH ERROR: 200 responds with an error and appropriate message when the request body does not have inc_votes", () => {
+      const updateVote = {
+        name: "Mitch"
+      };
+
+      return (
+        request(app)
+          .patch("/api/article/2")
+          .send(updateVote)
+          // .expect(200)
+          .then(response => {
+            console.log(response, "in the test");
+            expect(response.body.msg).to.equal("Bad Request");
+          })
+      );
+    });
+  });
+
+  describe.only("POST: /articles/:article_id/comments", () => {
+    it("POST: 200 posts a new comment in the comments table when passed an article id", () => {
+      const newComment = {
+        username: "butter_bridge",
+        body: "this is a new comment"
+      };
+
+      return (
+        request(app)
+          .post("/api/articles/2/comments")
+          .send(newComment)
+          // .expect(200)
+          .then(response => {
+            console.log(response, "in the test");
+          })
+      );
     });
   });
 });
