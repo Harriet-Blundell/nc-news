@@ -60,7 +60,7 @@ describe("/api", () => {
   });
 
   describe("/api/articles/:article_id", () => {
-    it("GET: 200 responds with an article object when passed an article id", () => {
+    it("GET: 200, responds with an article object when passed an article id", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
@@ -95,7 +95,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
-    it("PATCH: 201 responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
+    it("PATCH: 201, responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const newVote = {
         inc_votes: 1
       };
@@ -109,14 +109,14 @@ describe("/api", () => {
           expect(response.body.article.votes).to.equal(newVote.inc_votes);
         });
     });
-    xit("PATCH: 200 responds with an error and appropriate message when the request body does not have inc_votes", () => {
+    it("PATCH: 200, responds with the array article object with the votes property unchanged when passed a request body that is empty", () => {
       return request(app)
         .patch("/api/articles/2")
-        .send()
+        .send({})
         .expect(200)
         .then(response => {
-          // console.log(response.body.article, "in the test");
-          // expect(response.body)
+          expect(response.body.article).to.be.an("object");
+          expect(response.body.article.votes).to.equal(1);
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
@@ -241,8 +241,8 @@ describe("/api", () => {
     });
   });
 
-  describe("GET: /:article_id/comments", () => {
-    it("GET: 200 responds with an array of comments for the given article_id that is sorted by and ordered by the queries passed in", () => {
+  describe.only("GET: /:article_id/comments", () => {
+    it("GET: 200, responds with an array of comments for the given article_id that is sorted by the column specified", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=author&order_by=asc")
         .expect(200)
@@ -259,7 +259,18 @@ describe("/api", () => {
           expect(response.body.comments).to.be.sortedBy("author");
         });
     });
-    it("GET: 200 responds with an array of comments for the given article_id with the sort by query in ascending order", () => {
+    it("GET: 200, responds with an array of comments for the given article_id that takes an order by query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?order_by=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an("object");
+          expect(response.body.comments).to.be.sortedBy("created_at", {
+            descending: false
+          });
+        });
+    });
+    it("GET: 200, responds with an array of comments for the given article_id that takes a sort by and order by query", () => {
       return request(app)
         .get("/api/articles/9/comments?sort_by=votes&order_by=asc")
         .expect(200)
@@ -270,7 +281,7 @@ describe("/api", () => {
           });
         });
     });
-    it("GET: 200 responds with an array of comments for the given article_id that is ordered by the sort_by default and order by default if passed no specific values", () => {
+    it("GET: 200, responds with an array of comments for the given article_id that is ordered by the sort_by default and order by default if passed no specific values", () => {
       return request(app)
         .get("/api/articles/5/comments?sort_by&order_by")
         .expect(200)
@@ -303,8 +314,8 @@ describe("/api", () => {
     it("GET: 200 responds with an array of article objects when passed ", () => {});
   });
 
-  describe.only("PATCH: /api/comments/:comment_id", () => {
-    it("PATCH: 201 responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
+  describe("PATCH: /api/comments/:comment_id", () => {
+    it("PATCH: 201, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const updateComment = {
         inc_votes: 1
       };
@@ -369,3 +380,4 @@ describe("/api", () => {
 });
 
 // DO PROMISE.ALL IN CASE THE CLIENT REQUEST ROUTES THAT ARE NOT ALLOWED!
+// e.g. Method not allowed

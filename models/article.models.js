@@ -17,24 +17,12 @@ function fetchArticleId(article_id) {
 }
 
 function updateArticleVote(body, article_id) {
-  // console.log(body, "in the model");
-
-  // if (body.length === 0) {
-  //   return connection
-  //     .select("*")
-  //     .from("articles")
-  //     .where("articles", "=", article_id)
-
-  //     .then(result => {
-  //       console.log(result, "in the model");
-  //     });
-  // }
-
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", body.inc_votes)
     .returning("*")
     .then(updateVote => {
+      console.log(updateVote);
       if (updateVote.length === 0) {
         return Promise.reject({ msg: "ID not found", status: 404 });
       }
@@ -63,7 +51,6 @@ function fetchCommentsById(sort_by, order_by, article_id) {
     .where("article_id", article_id)
     .orderBy(sort_by || "created_at", order_by || "desc")
     .then(commentOrdered => {
-      console.log(commentOrdered);
       return commentOrdered;
     });
 }
