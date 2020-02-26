@@ -56,4 +56,24 @@ function createArticleComment(article_id, newComment) {
     });
 }
 
-module.exports = { fetchArticleId, updateArticleVote, createArticleComment };
+function fetchCommentsById(sort_by, order_by, article_id) {
+  return connection
+    .select("comment_id", "votes", "created_at", "author", "body")
+    .from("comments")
+    .where("article_id", article_id)
+    .orderBy(sort_by || "created_at", order_by || "desc")
+    .then(commentOrdered => {
+      console.log(commentOrdered);
+      return commentOrdered;
+    });
+}
+
+function fetchArticles() {}
+
+module.exports = {
+  fetchArticleId,
+  updateArticleVote,
+  createArticleComment,
+  fetchCommentsById,
+  fetchArticles
+};

@@ -16,7 +16,8 @@ function handlePSQLErrors(err, req, res, next) {
   const psqlErrCodes = {
     "22P02": { msg: "Bad Request", status: 400 },
     "23503": { msg: "Not Found", status: 404 },
-    "23502": { msg: "Bad Request", status: 400 }
+    "23502": { msg: "Bad Request", status: 400 },
+    "42703": { msg: "Bad Request", status: 400 }
   };
 
   if (err.code !== undefined) {
@@ -27,5 +28,7 @@ function handlePSQLErrors(err, req, res, next) {
     next(err);
   }
 }
+
+// function handleServerErrors(err, req, res, next) {}
 
 module.exports = { handleCustomErrors, handlePSQLErrors };

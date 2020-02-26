@@ -1,5 +1,8 @@
 process.env.NODE_ENV = "test";
 const { expect } = require("chai");
+const chaiSorted = require("sams-chai-sorted");
+const chai = require("chai");
+chai.use(chaiSorted);
 const request = require("supertest");
 const { app } = require("../app");
 const connection = require("../db/connection.js");
@@ -239,6 +242,64 @@ describe("/api", () => {
   });
 
   describe.only("GET: /:article_id/comments", () => {
+    it("GET: 200 responds with an array of comments for the given article_id that is sorted by and ordered by the queries passed in", () => {
+      return request(app)
+        .get("/api/articles/1/comments?sort_by=author&order_by=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.be.an("object");
+
+          expect(response.body.comments[0]).to.include.all.keys(
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body"
+          );
+          expect(response.body.comments).to.be.sortedBy("author");
+        });
+    });
+    it("GET: 200 responds with an array of comments for the given article_id with the sort by query in ascending order", () => {
+      return request(app)
+        .get("/api/articles/9/comments?sort_by=votes&order_by=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.be.an("object");
+          expect(response.body.comments).to.be.sortedBy("votes", {
+            descending: false
+          });
+        });
+    });
+    it("GET: 200 responds with an array of comments for the given article_id that is ordered by the sort_by default and order by default if passed no specific values", () => {
+      return request(app)
+        .get("/api/articles/5/comments?sort_by&order_by")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.be.an("object");
+          expect(response.body.comments).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
+    it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
+      return request(app)
+        .get("/api/articles/1/comments?notAQuery=author&notAnOrderQuery=asc")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not a valid query");
+        });
+    });
+    it("GET ERROR: 400 responds with an error and appropriate message when passed a valid query but non-existent column and order by that is not asc or desc", () => {
+      return request(app)
+        .get("/api/articles/9/comments?sort_by=food&order_by=sideways")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+  });
+
+  describe("", () => {
     it("", () => {});
   });
 });
