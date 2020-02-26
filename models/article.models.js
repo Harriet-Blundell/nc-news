@@ -17,7 +17,18 @@ function fetchArticleId(article_id) {
 }
 
 function updateArticleVote(body, article_id) {
-  console.log(body, "in the model");
+  // console.log(body, "in the model");
+
+  // if (body.length === 0) {
+  //   return connection
+  //     .select("*")
+  //     .from("articles")
+  //     .where("articles", "=", article_id)
+
+  //     .then(result => {
+  //       console.log(result, "in the model");
+  //     });
+  // }
 
   return connection("articles")
     .where("article_id", article_id)
@@ -41,7 +52,7 @@ function createArticleComment(article_id, newComment) {
     .into("comments")
     .returning("*")
     .then(result => {
-      console.log(result, "in the model");
+      return result[0];
     });
 }
 

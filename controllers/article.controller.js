@@ -29,7 +29,7 @@ function patchArticleVote(req, res, next) {
 }
 
 function postArticleComment(req, res, next) {
-  createArticleComment(req.params, req.body).then(comment => {
+  createArticleComment(req.params.article_id, req.body).then(comment => {
     res.status(201).send({ comment });
   });
 }

@@ -108,11 +108,12 @@ describe("/api", () => {
     });
     xit("PATCH: 200 responds with an error and appropriate message when the request body does not have inc_votes", () => {
       return request(app)
-        .patch("/api/article/2")
+        .patch("/api/articles/2")
         .send()
         .expect(200)
         .then(response => {
-          console.log(response, "in the test");
+          // console.log(response.body.article, "in the test");
+          // expect(response.body)
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
@@ -157,17 +158,24 @@ describe("/api", () => {
   });
 
   describe.only("POST: /comments", () => {
-    it("POST: 200 posts a new comment in the comments table when passed an article id", () => {
+    it("POST: 201 posts a new comment in the comments table when passed an article id and a request body with username, and body inside", () => {
       return request(app)
         .post("/api/articles/9/comments")
         .send({
           username: "butter_bridge",
-          body: "this is a new comment"
+          body: "I am trying to make a post request"
         })
-        .expect(200)
         .then(response => {
-          console.log(response);
-          // console.log(response, "in the test");
+          console.log(response.body, "in the test");
+          expect(response.body.comment).to.have.all.keys(
+            "author",
+            "comment_id",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          );
+          expect(response.body.comment).to.be.an("object");
         });
     });
   });

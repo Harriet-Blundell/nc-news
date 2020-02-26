@@ -11,6 +11,6 @@ articleRouter
   .get(getArticleId)
   .patch(patchArticleVote);
 
-// articleRouter.route("/:article_id/comments").post(postArticleComment);
+articleRouter.route("/:article_id/comments").post(postArticleComment);
 
 module.exports = { articleRouter };
