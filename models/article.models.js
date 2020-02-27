@@ -81,14 +81,29 @@ function fetchArticles(
       }
     })
     .then(result => {
-      console.log(result);
-      return result;
+      if (result.length === 0 && author !== undefined) {
+        return checkIfExists(author, "username", "users").then(authorResult => {
+          if (authorResult === true) {
+            return [];
+          } else {
+            return Promise.reject({ msg: "User not found", status: 404 });
+          }
+        });
+      } else if (result.length === 0 && topic !== undefined) {
+        return checkIfExists(topic, "slug", "topics").then(topicResult => {
+          if (topicResult === true) {
+            return [];
+          } else {
+            return Promise.reject({ msg: "Topic not found", status: 404 });
+          }
+        });
+      } else {
+        return result;
+      }
     });
 }
 
 function checkIfExists(value, column, table) {
-  console.log(value, column, table);
-
   return connection
     .select("*")
     .from(table)
@@ -101,6 +116,8 @@ function checkIfExists(value, column, table) {
       }
     });
 }
+
+// if the person does not exist, write a promise.reject - 404 - no such person
 
 module.exports = {
   fetchArticleId,

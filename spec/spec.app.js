@@ -21,7 +21,7 @@ describe("/api", () => {
         .get("/api/topics")
         .expect(200)
         .then(response => {
-          expect(response.body.topics[0]).to.have.keys("slug", "description");
+          expect(response.body.topics[0]).to.have.keys(["slug", "description"]);
           expect(response.body.topics).to.be.an("array");
         });
     });
@@ -46,11 +46,11 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body.user).to.be.an("object");
-          expect(response.body.user).to.have.keys(
+          expect(response.body.user).to.have.keys([
             "username",
             "avatar_url",
             "name"
-          );
+          ]);
         });
     });
     it("GET ERROR: 404 responds with an error and appropriate message when passed a username that does not exist", () => {
@@ -89,7 +89,7 @@ describe("/api", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.have.keys(
+          expect(response.body.article).to.have.keys([
             "author",
             "title",
             "article_id",
@@ -98,7 +98,7 @@ describe("/api", () => {
             "created_at",
             "votes",
             "comment_count"
-          );
+          ]);
 
           expect(response.body.article.comment_count).to.equal(13);
         });
@@ -130,7 +130,7 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body.article).to.be.an("object");
-          expect(response.body.article.votes).to.equal(newVote.inc_votes);
+          expect(response.body.article.votes).to.equal(1);
         });
     });
     it("PATCH: 200, responds with the array article object with the votes property unchanged when passed a request body that is empty", () => {
@@ -206,14 +206,14 @@ describe("/api", () => {
         })
         .expect(201)
         .then(response => {
-          expect(response.body.comment).to.have.all.keys(
+          expect(response.body.comment).to.have.all.keys([
             "author",
             "comment_id",
             "article_id",
             "votes",
             "created_at",
             "body"
-          );
+          ]);
           expect(response.body.comment).to.be.an("object");
         });
     });
@@ -297,13 +297,13 @@ describe("/api", () => {
         .then(response => {
           expect(response.body.comments[0]).to.be.an("object");
 
-          expect(response.body.comments[0]).to.include.all.keys(
+          expect(response.body.comments[0]).to.include.all.keys([
             "comment_id",
             "votes",
             "created_at",
             "author",
             "body"
-          );
+          ]);
           expect(response.body.comments).to.be.sortedBy("author");
         });
     });
@@ -358,7 +358,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/api/articles", () => {
+  describe("/api/articles", () => {
     it("GET: 200 responds with an array of all article objects with a comment in the object", () => {
       return request(app)
         .get("/api/articles")
@@ -453,13 +453,28 @@ describe("/api", () => {
           expect(response.body.article.length).to.equal(0);
         });
     });
-    it("GET: 200, responds with ", () => {});
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
       return request(app)
         .get("/api/articles?notAQuery=author")
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Not a valid query");
+        });
+    });
+    it("GET ERROR: 404 responds with an error and appropriate message when passed an author that does not exist", () => {
+      return request(app)
+        .get("/api/articles?author=noface")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("User not found");
+        });
+    });
+    it("GET ERROR: 404 responds with an error and appropriate message when passed a topic that does not exist", () => {
+      return request(app)
+        .get("/api/articles?topic=brusselsprouts")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Topic not found");
         });
     });
   });

@@ -6,7 +6,7 @@ const {
   formatComments
 } = require("../db/utils/utils");
 
-const { checkIfRowsExist } = require("../models/article.models");
+const { checkIfExists } = require("../models/article.models");
 
 describe("formatDates", () => {
   it("returns an empty array if passed an empty array", () => {
