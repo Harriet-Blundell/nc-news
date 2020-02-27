@@ -340,6 +340,30 @@ describe("/api", () => {
           });
         });
     });
+    it("GET: 200, responds with an empty array when passed an article id that exists but not in the comments table", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments.length).to.equal(0);
+        });
+    });
+    it("GET ERROR: 404 responds with an error and appropriate message when passed valid id, but does not exist in the comments or any other tables", () => {
+      return request(app)
+        .get("/api/articles/900/comments")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("ID not found");
+        });
+    });
+    it("GET ERROR: 400 responds with an error and appropriate message when passed an invalid id", () => {
+      return request(app)
+        .get("/api/articles/notAValidId/comments")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
       return request(app)
         .get("/api/articles/1/comments?notAQuery=author&notAnOrderQuery=asc")
@@ -359,7 +383,7 @@ describe("/api", () => {
   });
 
   describe("/api/articles", () => {
-    it("GET: 200 responds with an array of all article objects with a comment in the object", () => {
+    it("GET: 200 responds with an array of all article objects with a comment count in the object", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)

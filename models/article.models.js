@@ -7,12 +7,12 @@ function fetchArticleId(article_id) {
     .count({ comment_count: "comment_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
-    .then(result => {
-      if (result.length === 0) {
+    .then(articleId => {
+      if (articleId.length === 0) {
         return Promise.reject({ msg: "Not found", status: 404 });
       }
-      result[0].comment_count = +result[0].comment_count;
-      return result[0];
+      articleId[0].comment_count = +articleId[0].comment_count;
+      return articleId[0];
     });
 }
 
@@ -38,8 +38,8 @@ function createArticleComment(article_id, newComment) {
     })
     .into("comments")
     .returning("*")
-    .then(result => {
-      return result[0];
+    .then(createdComment => {
+      return createdComment[0];
     });
 }
 
@@ -50,6 +50,17 @@ function fetchCommentsById(sort_by, order_by, article_id) {
     .where("article_id", article_id)
     .orderBy(sort_by || "created_at", order_by || "desc")
     .then(commentOrdered => {
+      if (commentOrdered.length === 0 && article_id !== undefined) {
+        return checkIfExists(article_id, "article_id", "articles").then(
+          articleIdComment => {
+            if (articleIdComment === true) {
+              return [];
+            } else {
+              return Promise.reject({ msg: "ID not found", status: 404 });
+            }
+          }
+        );
+      }
       return commentOrdered;
     });
 }
