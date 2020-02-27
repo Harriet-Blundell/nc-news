@@ -81,11 +81,27 @@ function fetchArticles(
       if (author) {
         queries.where("articles.author", "=", author);
       }
+    })
+    .then(result => {
+      return result;
     });
 }
 
-function checkIfRowsExists(value, column, table) {
-  return connection.select("*").from("");
+function checkIfRowsExist(value, column, table) {
+  console.log(value, column, table);
+
+  return connection
+    .select("*")
+    .from(table)
+    .where(column, "=", value)
+
+    .then(result => {
+      if (result.length !== 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
 }
 
 module.exports = {
@@ -93,5 +109,6 @@ module.exports = {
   updateArticleVote,
   createArticleComment,
   fetchCommentsById,
-  fetchArticles
+  fetchArticles,
+  checkIfRowsExist
 };

@@ -1,5 +1,5 @@
 function handleCustomErrors(err, req, res, next) {
-  console.log(err.status, "custom error");
+  console.log(err);
 
   const { msg, status } = err;
 

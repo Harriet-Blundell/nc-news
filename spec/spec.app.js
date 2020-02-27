@@ -358,7 +358,7 @@ describe("/api", () => {
     });
   });
 
-  describe("/api/articles", () => {
+  describe.only("/api/articles", () => {
     it("GET: 200 responds with an array of all article objects with a comment in the object", () => {
       return request(app)
         .get("/api/articles")
@@ -419,12 +419,38 @@ describe("/api", () => {
           });
         });
     });
-    xit("GET: 200, responds with an array of all article objects that is filtered by username value specified in the query", () => {
+    it("GET: 200, responds with an array of all article objects that is filtered by username specified in the query", () => {
       return request(app)
-        .get("/api/articles?author=mitch")
+        .get("/api/articles?author=butter_bridge")
         .expect(200)
         .then(response => {
-          console.log(response.body.article, "in the test");
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("author");
+        });
+    });
+    it("GET: 200, responds with an array of all article objects that is filter by the topics specified in the query", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("topics");
+        });
+    });
+    it("GET: 200, responds with an empty array when passed an author that does exist, but does not have any articles", () => {
+      return request(app)
+        .get("/api/articles?author=lurker")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.length).to.equal(0);
+        });
+    });
+    it("GET: 200, responds with an empty array when passed a topic that does exist, but does not have any articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.length).to.equal(0);
         });
     });
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {

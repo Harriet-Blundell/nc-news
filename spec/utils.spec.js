@@ -1,9 +1,12 @@
+process.env.NODE_ENV = "test";
 const { expect } = require("chai");
 const {
   formatDates,
   makeRefObj,
   formatComments
 } = require("../db/utils/utils");
+
+const { checkIfRowsExist } = require("../models/article.models");
 
 describe("formatDates", () => {
   it("returns an empty array if passed an empty array", () => {
@@ -297,5 +300,44 @@ describe("formatComments", () => {
     });
 
     expect(comments).to.deep.equal(commentCopy);
+  });
+});
+
+describe("Check if Rows Exist", () => {
+  it("returns true if a user does exist in the user table", () => {
+    const column = "username";
+    const table = "users";
+    const value = "lurker";
+
+    return checkIfRowsExist(value, column, table).then(response => {
+      expect(response).to.equal(true);
+    });
+  });
+  it("returns false if a user does not exist in the user table", () => {
+    const column = "username";
+    const table = "users";
+    const value = "conrad";
+
+    return checkIfRowsExist(value, column, table).then(response => {
+      expect(response).to.equal(false);
+    });
+  });
+  it("returns true if a topic does exist in the topic table", () => {
+    const column = "slug";
+    const table = "topics";
+    const value = "cats";
+
+    return checkIfRowsExist(value, column, table).then(response => {
+      expect(response).to.equal(true);
+    });
+  });
+  it("returns false if a topic does not exist in the topic table", () => {
+    const column = "slug";
+    const table = "topics";
+    const value = "dog";
+
+    return checkIfRowsExist(value, column, table).then(response => {
+      expect(response).to.equal(false);
+    });
   });
 });
