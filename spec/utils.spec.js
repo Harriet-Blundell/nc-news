@@ -303,13 +303,13 @@ describe("formatComments", () => {
   });
 });
 
-describe("Check if Rows Exist", () => {
+describe("Check If Exists", () => {
   it("returns true if a user does exist in the user table", () => {
     const column = "username";
     const table = "users";
     const value = "lurker";
 
-    return checkIfRowsExist(value, column, table).then(response => {
+    return checkIfExists(value, column, table).then(response => {
       expect(response).to.equal(true);
     });
   });
@@ -318,7 +318,7 @@ describe("Check if Rows Exist", () => {
     const table = "users";
     const value = "conrad";
 
-    return checkIfRowsExist(value, column, table).then(response => {
+    return checkIfExists(value, column, table).then(response => {
       expect(response).to.equal(false);
     });
   });
@@ -327,7 +327,7 @@ describe("Check if Rows Exist", () => {
     const table = "topics";
     const value = "cats";
 
-    return checkIfRowsExist(value, column, table).then(response => {
+    return checkIfExists(value, column, table).then(response => {
       expect(response).to.equal(true);
     });
   });
@@ -336,7 +336,7 @@ describe("Check if Rows Exist", () => {
     const table = "topics";
     const value = "dog";
 
-    return checkIfRowsExist(value, column, table).then(response => {
+    return checkIfExists(value, column, table).then(response => {
       expect(response).to.equal(false);
     });
   });

@@ -453,6 +453,7 @@ describe("/api", () => {
           expect(response.body.article.length).to.equal(0);
         });
     });
+    it("GET: 200, responds with ", () => {});
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
       return request(app)
         .get("/api/articles?notAQuery=author")
@@ -563,6 +564,3 @@ describe("/api", () => {
     });
   });
 });
-
-// DO PROMISE.ALL IN CASE THE CLIENT REQUEST ROUTES THAT ARE NOT ALLOWED!
-// e.g. Method not allowed - 405

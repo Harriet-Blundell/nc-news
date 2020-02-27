@@ -76,25 +76,23 @@ function fetchArticles(
     .modify(queries => {
       if (topic) {
         queries.where("articles.topic", "=", topic);
-      }
-
-      if (author) {
+      } else if (author) {
         queries.where("articles.author", "=", author);
       }
     })
     .then(result => {
+      console.log(result);
       return result;
     });
 }
 
-function checkIfRowsExist(value, column, table) {
+function checkIfExists(value, column, table) {
   console.log(value, column, table);
 
   return connection
     .select("*")
     .from(table)
     .where(column, "=", value)
-
     .then(result => {
       if (result.length !== 0) {
         return true;
@@ -110,5 +108,5 @@ module.exports = {
   createArticleComment,
   fetchCommentsById,
   fetchArticles,
-  checkIfRowsExist
+  checkIfExists
 };
