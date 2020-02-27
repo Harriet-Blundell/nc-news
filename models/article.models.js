@@ -17,10 +17,6 @@ function fetchArticleId(article_id) {
 }
 
 function updateArticleVote(body, article_id) {
-  // if (body.length === 0) {
-  //   return Promise.reject({msg: "Bad Request", status: })
-  // }
-
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", body.inc_votes)
@@ -58,7 +54,39 @@ function fetchCommentsById(sort_by, order_by, article_id) {
     });
 }
 
-function fetchArticles() {}
+function fetchArticles(
+  sort_by = "created_at",
+  order_by = "desc",
+  topic,
+  author
+) {
+  return connection("articles")
+    .select(
+      "articles.author",
+      "title",
+      "articles.article_id",
+      "topic",
+      "articles.created_at",
+      "articles.votes"
+    )
+    .orderBy(sort_by, order_by)
+    .count({ comment_count: "comment_id" })
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .groupBy("articles.article_id")
+    .modify(queries => {
+      if (topic) {
+        queries.where("articles.topic", "=", topic);
+      }
+
+      if (author) {
+        queries.where("articles.author", "=", author);
+      }
+    });
+}
+
+function checkIfRowsExists(value, column, table) {
+  return connection.select("*").from("");
+}
 
 module.exports = {
   fetchArticleId,

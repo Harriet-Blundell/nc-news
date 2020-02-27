@@ -10,16 +10,20 @@ const {
 
 const { checkForInvalidKeys } = require("../middlewares/index.js");
 
-articleRouter.route("/").get(getArticles);
+const { send405Error } = require("../error/index");
+
+articleRouter.route("/").get(checkForInvalidKeys, getArticles);
 
 articleRouter
   .route("/:article_id")
   .get(getArticleId)
-  .patch(patchArticleVote);
+  .patch(patchArticleVote)
+  .all(send405Error);
 
 articleRouter
   .route("/:article_id/comments")
   .post(postArticleComment)
-  .get(checkForInvalidKeys, getCommentsById);
+  .get(checkForInvalidKeys, getCommentsById)
+  .all(send405Error);
 
 module.exports = { articleRouter };

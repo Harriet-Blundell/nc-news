@@ -29,7 +29,9 @@ function handlePSQLErrors(err, req, res, next) {
   }
 }
 
-// function send405Error(err, req, res, next) {}
+function send405Error(req, res, next) {
+  res.status(405).send({ msg: "Method Not Allowed" });
+}
 
 function handleServerErrors(err, req, res, next) {
   res.status(500).send({ msg: "Internal Server Error" });
@@ -38,5 +40,6 @@ function handleServerErrors(err, req, res, next) {
 module.exports = {
   handleCustomErrors,
   handlePSQLErrors,
-  handleServerErrors
+  handleServerErrors,
+  send405Error
 };

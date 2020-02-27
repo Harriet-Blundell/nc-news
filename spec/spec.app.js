@@ -25,6 +25,18 @@ describe("/api", () => {
           expect(response.body.topics).to.be.an("array");
         });
     });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["patch", "put", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/topics")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
 
   describe("/users/:username", () => {
@@ -56,6 +68,18 @@ describe("/api", () => {
         .then(response => {
           expect(response.body.msg).to.equal("Bad Request");
         });
+    });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["patch", "put", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/users/butter_bridge")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
     });
   });
 
@@ -158,6 +182,18 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["put", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/articles/3")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
 
   describe("POST: /:articles_id/comments", () => {
@@ -239,6 +275,18 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/articles/1/comments")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
 
   describe("GET: /:article_id/comments", () => {
@@ -310,12 +358,82 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/api/articles", () => {
-    it("GET: 200 responds with an array of article objects when passed a sort by query", () => {
+  describe("/api/articles", () => {
+    it("GET: 200 responds with an array of all article objects with a comment in the object", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article[0]).to.include.all.keys([
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          ]);
+
+          response.body.article.forEach(countComment => {
+            expect(countComment.comment_count).to.equal(
+              countComment.comment_count
+            );
+          });
+
+          expect(response.body.article).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
+    it("GET: 200, responds with an array of all article objects that is sorted by the topic", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("topic", {
+            descending: true
+          });
+        });
+    });
+    it("GET: 200, responds with an array of all article objects that is sorted by author ", () => {
       return request(app)
         .get("/api/articles?sort_by=author")
         .expect(200)
-        .then(response => {});
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("author", {
+            descending: true
+          });
+        });
+    });
+    it("GET: 200, responds with an array of all article objects that is ordered by asc", () => {
+      return request(app)
+        .get("/api/articles?order_by=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("created_at", {
+            descending: false
+          });
+        });
+    });
+    xit("GET: 200, responds with an array of all article objects that is filtered by username value specified in the query", () => {
+      return request(app)
+        .get("/api/articles?author=mitch")
+        .expect(200)
+        .then(response => {
+          console.log(response.body.article, "in the test");
+        });
+    });
+    it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
+      return request(app)
+        .get("/api/articles?notAQuery=author")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not a valid query");
+        });
     });
   });
 
@@ -380,6 +498,18 @@ describe("/api", () => {
         .then(response => {
           expect(response.body.msg).to.equal("Bad Request");
         });
+    });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["post", "get"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/comments/1")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
     });
   });
 

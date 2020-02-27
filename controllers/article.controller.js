@@ -53,7 +53,17 @@ function getCommentsById(req, res, next) {
     });
 }
 
-function getArticles(req, res, next) {}
+function getArticles(req, res, next) {
+  const { sort_by, order_by, topic, author } = req.query;
+
+  fetchArticles(sort_by, order_by, topic, author)
+    .then(article => {
+      res.status(200).send({ article });
+    })
+    .catch(err => {
+      next(err);
+    });
+}
 
 module.exports = {
   getArticleId,
