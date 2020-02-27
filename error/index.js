@@ -1,6 +1,4 @@
 function handleCustomErrors(err, req, res, next) {
-  console.log(err);
-
   const { msg, status } = err;
 
   if (err.status !== undefined) {
@@ -11,8 +9,6 @@ function handleCustomErrors(err, req, res, next) {
 }
 
 function handlePSQLErrors(err, req, res, next) {
-  console.log(err.code, "psql error");
-
   const psqlErrCodes = {
     "22P02": { msg: "Bad Request", status: 400 },
     "23503": { msg: "Not Found", status: 404 },
