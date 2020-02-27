@@ -17,12 +17,15 @@ function fetchArticleId(article_id) {
 }
 
 function updateArticleVote(body, article_id) {
+  // if (body.length === 0) {
+  //   return Promise.reject({msg: "Bad Request", status: })
+  // }
+
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", body.inc_votes)
     .returning("*")
     .then(updateVote => {
-      console.log(updateVote);
       if (updateVote.length === 0) {
         return Promise.reject({ msg: "ID not found", status: 404 });
       }

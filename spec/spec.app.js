@@ -241,7 +241,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("GET: /:article_id/comments", () => {
+  describe("GET: /:article_id/comments", () => {
     it("GET: 200, responds with an array of comments for the given article_id that is sorted by the column specified", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=author&order_by=asc")
@@ -310,8 +310,13 @@ describe("/api", () => {
     });
   });
 
-  xdescribe("/api/articles", () => {
-    it("GET: 200 responds with an array of article objects when passed ", () => {});
+  describe.only("/api/articles", () => {
+    it("GET: 200 responds with an array of article objects when passed a sort by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(response => {});
+    });
   });
 
   describe("PATCH: /api/comments/:comment_id", () => {
@@ -377,7 +382,31 @@ describe("/api", () => {
         });
     });
   });
+
+  describe("DELETE: /comments/:comment_id", () => {
+    it("DELETE: 204, deletes the comment when passed a comment id and responds with no content", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204);
+    });
+    it("DELETE ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
+      return request(app)
+        .delete("/api/comments/900")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("DELETE ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
+      return request(app)
+        .delete("/api/comments/notAnId")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+  });
 });
 
 // DO PROMISE.ALL IN CASE THE CLIENT REQUEST ROUTES THAT ARE NOT ALLOWED!
-// e.g. Method not allowed
+// e.g. Method not allowed - 405

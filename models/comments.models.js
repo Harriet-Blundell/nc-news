@@ -13,4 +13,15 @@ function updateCommentVote(comment_id, newVote) {
     });
 }
 
-module.exports = { updateCommentVote };
+function removeCommentById(comment_id) {
+  return connection("comments")
+    .where("comment_id", comment_id)
+    .del()
+    .then(comment => {
+      if (comment <= 0) {
+        return Promise.reject({ msg: "Not Found", status: 404 });
+      }
+    });
+}
+
+module.exports = { updateCommentVote, removeCommentById };
