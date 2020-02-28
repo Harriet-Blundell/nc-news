@@ -15,7 +15,7 @@ describe("/api", () => {
   beforeEach(() => {
     return connection.seed.run();
   });
-  describe("/topics", () => {
+  describe("Get all topics - /api/topics", () => {
     it('GET: responds with status 200 and an array of topic objects which have "slug" and "description" as properties', () => {
       return request(app)
         .get("/api/topics")
@@ -39,7 +39,7 @@ describe("/api", () => {
     });
   });
 
-  describe("/users/:username", () => {
+  describe("Get users by username - /api/users/:username", () => {
     it('GET: responds with status 200 and returns an object with "username", "avatar_url", and "name" as properties and the users details when passed a username', () => {
       return request(app)
         .get("/api/users/butter_bridge")
@@ -83,7 +83,7 @@ describe("/api", () => {
     });
   });
 
-  describe("/api/articles/:article_id", () => {
+  describe("GET and PATCH articles by articles_id - /api/articles/:article_id", () => {
     it("GET: 200, responds with an article object when passed an article id", () => {
       return request(app)
         .get("/api/articles/1")
@@ -196,7 +196,7 @@ describe("/api", () => {
     });
   });
 
-  describe("POST: /:articles_id/comments", () => {
+  describe("POST comments by article_id - /:articles_id/comments", () => {
     it("POST: 201 posts a new comment in the comments table when passed an article id and a request body with username, and body inside", () => {
       return request(app)
         .post("/api/articles/9/comments")
@@ -289,7 +289,7 @@ describe("/api", () => {
     });
   });
 
-  describe("GET: /:article_id/comments", () => {
+  describe("GET comments by article_id - /:article_id/comments", () => {
     it("GET: 200, responds with an array of comments for the given article_id that is sorted by the column specified", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=author&order_by=asc")
@@ -382,7 +382,7 @@ describe("/api", () => {
     });
   });
 
-  describe("/api/articles", () => {
+  describe("GET all articles - /api/articles", () => {
     it("GET: 200 responds with an array of all article objects with a comment count in the object", () => {
       return request(app)
         .get("/api/articles")
@@ -477,6 +477,33 @@ describe("/api", () => {
           expect(response.body.article.length).to.equal(0);
         });
     });
+    it("GET: 200, responds with an array of all article objects that is filtered by author and topic queries", () => {
+      return request(app)
+        .get("/api/articles?author=rogersop&topic=cats")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article).to.be.sortedBy("author", "topic", {
+            descending: false
+          });
+        });
+    });
+    it("GET: 200 responds with an array of all article objects when passed a valid author and topic", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge&topic=mitch")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article).to.be.an("array");
+        });
+    });
+    it("GET 200 responds with an empty array when passed an author that exists but does not match the topic passed in", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge&topic=banana")
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.length).to.equal(0);
+        });
+    });
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
       return request(app)
         .get("/api/articles?notAQuery=author")
@@ -503,7 +530,7 @@ describe("/api", () => {
     });
   });
 
-  describe("PATCH: /api/comments/:comment_id", () => {
+  describe("PATCH comments by comment_id - /api/comments/:comment_id", () => {
     it("PATCH: 201, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const updateComment = {
         inc_votes: 1
@@ -579,7 +606,7 @@ describe("/api", () => {
     });
   });
 
-  describe("DELETE: /comments/:comment_id", () => {
+  describe("DELETE comment by comment_id -  /comments/:comment_id", () => {
     it("DELETE: 204, deletes the comment when passed a comment id and responds with no content", () => {
       return request(app)
         .delete("/api/comments/1")

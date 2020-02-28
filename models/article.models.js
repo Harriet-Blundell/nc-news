@@ -65,12 +65,7 @@ function fetchCommentsById(sort_by, order_by, article_id) {
     });
 }
 
-function fetchArticles(
-  sort_by = "created_at",
-  order_by = "desc",
-  topic,
-  author
-) {
+function fetchArticles(sort_by, order_by, topic, author) {
   return connection("articles")
     .select(
       "articles.author",
@@ -80,7 +75,7 @@ function fetchArticles(
       "articles.created_at",
       "articles.votes"
     )
-    .orderBy(sort_by, order_by)
+    .orderBy(sort_by || "created_at", order_by || "desc")
     .count({ comment_count: "comment_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
@@ -95,7 +90,7 @@ function fetchArticles(
       if (result.length === 0 && author !== undefined) {
         return checkIfExists(author, "username", "users").then(authorResult => {
           if (authorResult === true) {
-            return [];
+            return result;
           } else {
             return Promise.reject({ msg: "User not found", status: 404 });
           }
@@ -103,7 +98,7 @@ function fetchArticles(
       } else if (result.length === 0 && topic !== undefined) {
         return checkIfExists(topic, "slug", "topics").then(topicResult => {
           if (topicResult === true) {
-            return [];
+            return result;
           } else {
             return Promise.reject({ msg: "Topic not found", status: 404 });
           }
@@ -119,8 +114,8 @@ function checkIfExists(value, column, table) {
     .select("*")
     .from(table)
     .where(column, "=", value)
-    .then(result => {
-      if (result.length !== 0) {
+    .then(checkResult => {
+      if (checkResult.length !== 0) {
         return true;
       } else {
         return false;

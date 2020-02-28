@@ -12,11 +12,11 @@ function fetchUserByUsername(username) {
     .from("users")
     .where("username", "=", username)
     .returning("*")
-    .then(result => {
-      if (result.length === 0) {
+    .then(usersResult => {
+      if (usersResult.length === 0) {
         return Promise.reject({ msg: "Username not found", status: 404 });
       }
-      return result[0];
+      return usersResult[0];
     });
 }
 

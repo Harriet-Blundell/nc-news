@@ -17,8 +17,8 @@ function removeCommentById(comment_id) {
   return connection("comments")
     .where("comment_id", comment_id)
     .del()
-    .then(comment => {
-      if (comment <= 0) {
+    .then(removeComment => {
+      if (removeComment <= 0) {
         return Promise.reject({ msg: "Not Found", status: 404 });
       }
     });

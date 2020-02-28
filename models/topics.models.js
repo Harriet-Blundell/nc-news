@@ -5,8 +5,8 @@ function fetchTopics() {
     .select("*")
     .from("topics")
     .returning("*")
-    .then(result => {
-      return result;
+    .then(topicResult => {
+      return topicResult;
     });
 }
 
