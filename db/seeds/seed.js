@@ -20,7 +20,7 @@ exports.seed = function(knex) {
 
       return Promise.all([topicsInsertions, usersInsertions]);
     })
-    .then(([topics, users]) => {
+    .then(() => {
       const formattedArticleDates = formatDates(articleData);
       return knex
         .insert(formattedArticleDates)

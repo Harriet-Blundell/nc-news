@@ -10,8 +10,8 @@ function getArticleId(req, res, next) {
   const { article_id } = req.params;
 
   fetchArticleId(article_id)
-    .then(article => {
-      res.status(200).send({ article });
+    .then(articles => {
+      res.status(200).send({ articles });
     })
     .catch(err => {
       next(err);
@@ -22,8 +22,8 @@ function patchArticleVote(req, res, next) {
   const { article_id } = req.params;
 
   updateArticleVote(req.body, article_id)
-    .then(article => {
-      res.status(200).send({ article });
+    .then(articles => {
+      res.status(200).send({ articles });
     })
     .catch(err => {
       next(err);
@@ -57,8 +57,8 @@ function getArticles(req, res, next) {
   const { sort_by, order_by, topic, author } = req.query;
 
   fetchArticles(sort_by, order_by, topic, author)
-    .then(article => {
-      res.status(200).send({ article });
+    .then(articles => {
+      res.status(200).send({ articles });
     })
     .catch(err => {
       next(err);

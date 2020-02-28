@@ -23,5 +23,106 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves up an array object of of the user by the user id",
+    "queries": [],
+    "params": ["user_id"],
+    "exampleResponse": {
+      "user": {
+        "username": "jessjelly",
+        "avatar_url": "https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg",
+        "name": "Jess Jelly"
+      }
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves up an array object of the articles by article id",
+    "queries": [],
+    "params": ["article_id"],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "body": "I find this existence challenging",
+        "votes": 100,
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "created_at": "2018-11-15T12:21:54.171Z",
+        "comment_count": 13
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the article id's vote property's value",
+    "queries": [],
+    "body": [{ "inc_votes": 7 }],
+    "params": ["article_id"],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 7,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z"
+      }
+    }
+  },
+  "POST /api/articles/1/comments": {
+    "description": "updates the body property with a new comment for specified article id",
+    "queries": [],
+    "params": ["article_id"],
+    "body": [{ "username": "jessjelly", "body": "I am posting a new comment" }],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 302,
+        "author": "jessjelly",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": "2020-02-28T10:07:24.343Z",
+        "body": "I am posting a new comment"
+      }
+    }
+  },
+  "GET /api/articles/1/comments": {
+    "description": "serves up an array of comment objects sorted by a column and ordered asc or desc",
+    "queries": ["sort_by", "order_by"],
+    "params": [],
+    "body": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 302,
+          "votes": 0,
+          "created_at": "2020-02-28T10:07:24.343Z",
+          "author": "jessjelly",
+          "body": "I am posting a new comment"
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "serves up an array comment object with the vote property value updated",
+    "queries": [],
+    "params": ["comment_id"],
+    "body": [{ "inc_votes": 2 }],
+    "exampleResponse": {
+      "comments": {
+        "comment_id": 1,
+        "author": "tickle122",
+        "article_id": 18,
+        "votes": 10,
+        "created_at": "2016-07-09T18:07:18.932Z",
+        "body": "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus."
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment when passed an id and serves up no body for response",
+    "queries": [],
+    "params": ["comment_id"],
+    "body": []
   }
 }

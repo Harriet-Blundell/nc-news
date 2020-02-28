@@ -12,7 +12,10 @@ const { checkForInvalidKeys } = require("../middlewares/index.js");
 
 const { send405Error } = require("../error/index");
 
-articleRouter.route("/").get(checkForInvalidKeys, getArticles);
+articleRouter
+  .route("/")
+  .get(checkForInvalidKeys, getArticles)
+  .all(send405Error);
 
 articleRouter
   .route("/:article_id")

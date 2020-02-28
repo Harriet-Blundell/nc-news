@@ -4,7 +4,7 @@ const chaiSorted = require("sams-chai-sorted");
 const chai = require("chai");
 chai.use(chaiSorted);
 const request = require("supertest");
-const { app } = require("../app");
+const app = require("../app");
 const connection = require("../db/connection.js");
 
 describe("/api", () => {
@@ -89,7 +89,7 @@ describe("/api", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.have.keys([
+          expect(response.body.articles).to.have.keys([
             "author",
             "title",
             "article_id",
@@ -99,8 +99,7 @@ describe("/api", () => {
             "votes",
             "comment_count"
           ]);
-
-          expect(response.body.article.comment_count).to.equal(13);
+          expect(response.body.articles.comment_count).to.equal("13");
         });
     });
     it("GET ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
@@ -119,7 +118,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
-    it("PATCH: 201, responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
+    it("PATCH: 200, responds with the updated article when passed an article_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const newVote = {
         inc_votes: 1
       };
@@ -129,8 +128,8 @@ describe("/api", () => {
         .send(newVote)
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("object");
-          expect(response.body.article.votes).to.equal(1);
+          expect(response.body.articles).to.be.an("object");
+          expect(response.body.articles.votes).to.equal(1);
         });
     });
     it("PATCH: 200, responds with the array article object with the votes property unchanged when passed a request body that is empty", () => {
@@ -139,8 +138,8 @@ describe("/api", () => {
         .send({})
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("object");
-          expect(response.body.article.votes).to.equal(1);
+          expect(response.body).to.be.an("object");
+          expect(response.body.articles.votes).to.equal(0);
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
@@ -331,7 +330,7 @@ describe("/api", () => {
     });
     it("GET: 200, responds with an array of comments for the given article_id that is ordered by the sort_by default and order by default if passed no specific values", () => {
       return request(app)
-        .get("/api/articles/5/comments?sort_by&order_by")
+        .get("/api/articles/5/comments")
         .expect(200)
         .then(response => {
           expect(response.body.comments[0]).to.be.an("object");
@@ -388,8 +387,8 @@ describe("/api", () => {
         .get("/api/articles")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article[0]).to.include.all.keys([
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles[0]).to.include.all.keys([
             "author",
             "title",
             "article_id",
@@ -399,13 +398,13 @@ describe("/api", () => {
             "comment_count"
           ]);
 
-          response.body.article.forEach(countComment => {
+          response.body.articles.forEach(countComment => {
             expect(countComment.comment_count).to.equal(
               countComment.comment_count
             );
           });
 
-          expect(response.body.article).to.be.sortedBy("created_at", {
+          expect(response.body.articles).to.be.sortedBy("created_at", {
             descending: true
           });
         });
@@ -415,8 +414,8 @@ describe("/api", () => {
         .get("/api/articles?sort_by=topic")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("topic", {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("topic", {
             descending: true
           });
         });
@@ -426,8 +425,8 @@ describe("/api", () => {
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("author", {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("author", {
             descending: true
           });
         });
@@ -437,8 +436,8 @@ describe("/api", () => {
         .get("/api/articles?order_by=asc")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("created_at", {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("created_at", {
             descending: false
           });
         });
@@ -448,8 +447,8 @@ describe("/api", () => {
         .get("/api/articles?author=butter_bridge")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("author");
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("author");
         });
     });
     it("GET: 200, responds with an array of all article objects that is filter by the topics specified in the query", () => {
@@ -457,8 +456,8 @@ describe("/api", () => {
         .get("/api/articles?topic=cats")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("topics");
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("topics");
         });
     });
     it("GET: 200, responds with an empty array when passed an author that does exist, but does not have any articles", () => {
@@ -466,7 +465,7 @@ describe("/api", () => {
         .get("/api/articles?author=lurker")
         .expect(200)
         .then(response => {
-          expect(response.body.article.length).to.equal(0);
+          expect(response.body.articles).to.deep.equal([]);
         });
     });
     it("GET: 200, responds with an empty array when passed a topic that does exist, but does not have any articles", () => {
@@ -474,7 +473,7 @@ describe("/api", () => {
         .get("/api/articles?topic=paper")
         .expect(200)
         .then(response => {
-          expect(response.body.article.length).to.equal(0);
+          expect(response.body.articles).to.deep.equal([]);
         });
     });
     it("GET: 200, responds with an array of all article objects that is filtered by author and topic queries", () => {
@@ -482,8 +481,8 @@ describe("/api", () => {
         .get("/api/articles?author=rogersop&topic=cats")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article).to.be.sortedBy("author", "topic", {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("author", "topic", {
             descending: false
           });
         });
@@ -493,7 +492,7 @@ describe("/api", () => {
         .get("/api/articles?author=butter_bridge&topic=mitch")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
+          expect(response.body.articles).to.be.an("array");
         });
     });
     it("GET 200 responds with an empty array when passed an author that exists but does not match the topic passed in", () => {
@@ -501,7 +500,7 @@ describe("/api", () => {
         .get("/api/articles?author=butter_bridge&topic=banana")
         .expect(200)
         .then(response => {
-          expect(response.body.article.length).to.equal(0);
+          expect(response.body.articles).to.deep.equal([]);
         });
     });
     it("GET ERROR: 400 responds with an error and appropriate message when passed invalid query keys", () => {
@@ -528,10 +527,22 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Topic not found");
         });
     });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["put", "post", "delete", "patch"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
 
   describe("PATCH comments by comment_id - /api/comments/:comment_id", () => {
-    it("PATCH: 201, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
+    it("PATCH: 200, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const updateComment = {
         inc_votes: 1
       };
@@ -539,7 +550,7 @@ describe("/api", () => {
       return request(app)
         .patch("/api/comments/3")
         .send(updateComment)
-        .expect(201)
+        .expect(200)
         .then(response => {
           expect(response.body.comment).to.be.an("object");
           expect(response.body.comment).to.include.all.keys([
@@ -551,6 +562,16 @@ describe("/api", () => {
             "body"
           ]);
           expect(response.body.comment.votes).to.equal(101);
+        });
+    });
+    it("PATCH: 200, responds with the array article object with the votes property unchanged when passed a request body that is empty", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({})
+        .expect(200)
+        .then(response => {
+          expect(response.body.comment).to.be.an("object");
+          expect(response.body.comment.votes).to.equal(16);
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
@@ -606,7 +627,7 @@ describe("/api", () => {
     });
   });
 
-  describe("DELETE comment by comment_id -  /comments/:comment_id", () => {
+  describe("DELETE comment by comment_id - /comments/:comment_id", () => {
     it("DELETE: 204, deletes the comment when passed a comment id and responds with no content", () => {
       return request(app)
         .delete("/api/comments/1")
@@ -627,6 +648,18 @@ describe("/api", () => {
         .then(response => {
           expect(response.body.msg).to.equal("Bad Request");
         });
+    });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["post", "get"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/comments/1")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
     });
   });
 });

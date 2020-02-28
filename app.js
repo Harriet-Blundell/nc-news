@@ -20,4 +20,4 @@ app.use(handlePSQLErrors);
 
 app.use(handleServerErrors);
 
-module.exports = { app };
+module.exports = app;

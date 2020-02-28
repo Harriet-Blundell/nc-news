@@ -11,7 +11,6 @@ function fetchArticleId(article_id) {
       if (articleId.length === 0) {
         return Promise.reject({ msg: "Not found", status: 404 });
       }
-      articleId[0].comment_count = +articleId[0].comment_count;
       return articleId[0];
     });
 }
@@ -19,7 +18,7 @@ function fetchArticleId(article_id) {
 function updateArticleVote(body, article_id) {
   return connection("articles")
     .where("article_id", article_id)
-    .increment("votes", body.inc_votes)
+    .increment("votes", body.inc_votes || 0)
     .returning("*")
     .then(updateVote => {
       if (updateVote.length === 0) {
@@ -61,6 +60,7 @@ function fetchCommentsById(sort_by, order_by, article_id) {
           }
         );
       }
+
       return commentOrdered;
     });
 }
@@ -109,6 +109,12 @@ function fetchArticles(sort_by, order_by, topic, author) {
     });
 }
 
+// const checkIfAuthorExists = checkIfExists(author, "username", "users");
+
+// const checkIfTopicExists = checkIfExists(topic, "slug", "topics");
+
+// return Promise.all([result, checkIfAuthorExists, checkIfTopicExists]);
+
 function checkIfExists(value, column, table) {
   return connection
     .select("*")
@@ -122,8 +128,6 @@ function checkIfExists(value, column, table) {
       }
     });
 }
-
-// if the person does not exist, write a promise.reject - 404 - no such person
 
 module.exports = {
   fetchArticleId,
