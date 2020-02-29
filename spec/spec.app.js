@@ -89,7 +89,7 @@ describe("/api", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          expect(response.body.articles).to.have.keys([
+          expect(response.body.article).to.have.keys([
             "author",
             "title",
             "article_id",
@@ -99,7 +99,10 @@ describe("/api", () => {
             "votes",
             "comment_count"
           ]);
-          expect(response.body.articles.comment_count).to.equal("13");
+
+          expect(response.body).to.have.key("article");
+          expect(response.body.article).to.be.an("object");
+          expect(response.body.article.comment_count).to.equal("13");
         });
     });
     it("GET ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent id", () => {
@@ -128,8 +131,9 @@ describe("/api", () => {
         .send(newVote)
         .expect(200)
         .then(response => {
-          expect(response.body.articles).to.be.an("object");
-          expect(response.body.articles.votes).to.equal(1);
+          expect(response.body).to.have.key("article");
+          expect(response.body.article).to.be.an("object");
+          expect(response.body.article.votes).to.equal(1);
         });
     });
     it("PATCH: 200, responds with the array article object with the votes property unchanged when passed a request body that is empty", () => {
@@ -138,8 +142,9 @@ describe("/api", () => {
         .send({})
         .expect(200)
         .then(response => {
+          expect(response.body).to.have.key("article");
           expect(response.body).to.be.an("object");
-          expect(response.body.articles.votes).to.equal(0);
+          expect(response.body.article.votes).to.equal(0);
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid value e.g. string instead of a number on the request body", () => {
@@ -291,11 +296,12 @@ describe("/api", () => {
   describe("GET comments by article_id - /:article_id/comments", () => {
     it("GET: 200, responds with an array of comments for the given article_id that is sorted by the column specified", () => {
       return request(app)
-        .get("/api/articles/1/comments?sort_by=author&order_by=asc")
+        .get("/api/articles/1/comments?sort_by=author&order=asc")
         .expect(200)
         .then(response => {
+          expect(response.body).to.have.key("comments");
+          expect(response.body.comments).to.be.an("array");
           expect(response.body.comments[0]).to.be.an("object");
-
           expect(response.body.comments[0]).to.include.all.keys([
             "comment_id",
             "votes",
@@ -308,9 +314,10 @@ describe("/api", () => {
     });
     it("GET: 200, responds with an array of comments for the given article_id that takes an order by query", () => {
       return request(app)
-        .get("/api/articles/1/comments?order_by=asc")
+        .get("/api/articles/1/comments?order=asc")
         .expect(200)
         .then(response => {
+          expect(response.body.comments).to.be.an("array");
           expect(response.body).to.be.an("object");
           expect(response.body.comments).to.be.sortedBy("created_at", {
             descending: false
@@ -319,9 +326,10 @@ describe("/api", () => {
     });
     it("GET: 200, responds with an array of comments for the given article_id that takes a sort by and order by query", () => {
       return request(app)
-        .get("/api/articles/9/comments?sort_by=votes&order_by=asc")
+        .get("/api/articles/9/comments?sort_by=votes&order=asc")
         .expect(200)
         .then(response => {
+          expect(response.body.comments).to.be.an("array");
           expect(response.body.comments[0]).to.be.an("object");
           expect(response.body.comments).to.be.sortedBy("votes", {
             descending: false
@@ -333,6 +341,7 @@ describe("/api", () => {
         .get("/api/articles/5/comments")
         .expect(200)
         .then(response => {
+          expect(response.body.comments).to.be.an("array");
           expect(response.body.comments[0]).to.be.an("object");
           expect(response.body.comments).to.be.sortedBy("created_at", {
             descending: true
@@ -344,7 +353,7 @@ describe("/api", () => {
         .get("/api/articles/2/comments")
         .expect(200)
         .then(response => {
-          expect(response.body.comments.length).to.equal(0);
+          expect(response.body.comments).to.deep.equal([]);
         });
     });
     it("GET ERROR: 404 responds with an error and appropriate message when passed valid id, but does not exist in the comments or any other tables", () => {
@@ -373,7 +382,7 @@ describe("/api", () => {
     });
     it("GET ERROR: 400 responds with an error and appropriate message when passed a valid query but non-existent column and order by that is not asc or desc", () => {
       return request(app)
-        .get("/api/articles/9/comments?sort_by=food&order_by=sideways")
+        .get("/api/articles/9/comments?sort_by=food&order=sideways")
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Bad Request");
@@ -404,6 +413,8 @@ describe("/api", () => {
             );
           });
 
+          expect(response.body).to.have.key("articles");
+
           expect(response.body.articles).to.be.sortedBy("created_at", {
             descending: true
           });
@@ -420,11 +431,12 @@ describe("/api", () => {
           });
         });
     });
-    it("GET: 200, responds with an array of all article objects that is sorted by author ", () => {
+    it("GET: 200, responds with an array of all article objects that is sorted by author in descending order", () => {
       return request(app)
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then(response => {
+          expect(response.body).to.have.key("articles");
           expect(response.body.articles).to.be.an("array");
           expect(response.body.articles).to.be.sortedBy("author", {
             descending: true
@@ -433,9 +445,10 @@ describe("/api", () => {
     });
     it("GET: 200, responds with an array of all article objects that is ordered by asc", () => {
       return request(app)
-        .get("/api/articles?order_by=asc")
+        .get("/api/articles?order=asc")
         .expect(200)
         .then(response => {
+          expect(response.body).to.have.key("articles");
           expect(response.body.articles).to.be.an("array");
           expect(response.body.articles).to.be.sortedBy("created_at", {
             descending: false
@@ -481,6 +494,7 @@ describe("/api", () => {
         .get("/api/articles?author=rogersop&topic=cats")
         .expect(200)
         .then(response => {
+          expect(response.body).to.have.key("articles");
           expect(response.body.articles).to.be.an("array");
           expect(response.body.articles).to.be.sortedBy("author", "topic", {
             descending: false
@@ -541,7 +555,7 @@ describe("/api", () => {
     });
   });
 
-  describe("PATCH comments by comment_id - /api/comments/:comment_id", () => {
+  describe("PATCH comment by comment_id - /api/comments/:comment_id", () => {
     it("PATCH: 200, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const updateComment = {
         inc_votes: 1
@@ -654,6 +668,29 @@ describe("/api", () => {
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/comments/1")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
+
+  describe("GET: /api", () => {
+    it("GET: 200, responds with the endpoints.json", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(response => {
+          expect(response.body.description).to.be.an("object");
+        });
+    });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["post", "delete", "put", "patch"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api")
           .expect(405)
           .then(response => {
             expect(response.body.msg).to.equal("Method Not Allowed");

@@ -2,7 +2,7 @@ const express = require("express");
 
 const app = express();
 
-const { apiRouter } = require("./router/apiRouter.js");
+const apiRouter = require("./router/apiRouter.js");
 
 const {
   handleCustomErrors,

@@ -42,12 +42,12 @@ function createArticleComment(article_id, newComment) {
     });
 }
 
-function fetchCommentsById(sort_by, order_by, article_id) {
+function fetchCommentsById(sort_by, order, article_id) {
   return connection
     .select("comment_id", "votes", "created_at", "author", "body")
     .from("comments")
     .where("article_id", article_id)
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
     .then(commentOrdered => {
       if (commentOrdered.length === 0 && article_id !== undefined) {
         return checkIfExists(article_id, "article_id", "articles").then(
@@ -65,7 +65,7 @@ function fetchCommentsById(sort_by, order_by, article_id) {
     });
 }
 
-function fetchArticles(sort_by, order_by, topic, author) {
+function fetchArticles(sort_by, order, topic, author) {
   return connection("articles")
     .select(
       "articles.author",
@@ -75,7 +75,7 @@ function fetchArticles(sort_by, order_by, topic, author) {
       "articles.created_at",
       "articles.votes"
     )
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
     .count({ comment_count: "comment_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
