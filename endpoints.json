@@ -124,5 +124,74 @@
     "queries": [],
     "params": ["comment_id"],
     "body": []
+  },
+  "POST /api/articles": {
+    "description": "creates a new article",
+    "queries": [],
+    "params": [],
+    "body": ["author", "title", "body", "topic"],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 52,
+          "title": "Coding is fun",
+          "body": "I like programming",
+          "votes": 0,
+          "topic": "the French Revolution",
+          "author": "grumpy19",
+          "created_at": "2020-02-29T20:54:04.392Z"
+        }
+      ]
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article by an article id and serves up no body for a response",
+    "queries": [],
+    "params": ["article_id"],
+    "body": []
+  },
+  "POST /api/topics": {
+    "description": "posts a new topic",
+    "queries": [],
+    "params": [],
+    "body": ["slugs", "description"],
+    "exampleResponse": {
+      "topic": [
+        {
+          "slug": "coding",
+          "description": "Learn JavaScript"
+        }
+      ]
+    }
+  },
+  "POST /api/users": {
+    "description": "creates a new user",
+    "queries": [],
+    "params": [],
+    "body": ["username", "avatar_url", "name"],
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "pools",
+          "avatar_url": "https://www.pool_s.com",
+          "name": "Sam Pool"
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves up all users",
+    "queries": [],
+    "params": [],
+    "body": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "rogersop",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+          "name": "paul"
+        }
+      ]
+    }
   }
 }
