@@ -129,11 +129,40 @@ function checkIfExists(value, column, table) {
     });
 }
 
+function removeArticleById(article_id) {
+  return connection("articles")
+    .where("article_id", "=", article_id)
+    .del()
+    .then(removeArticle => {
+      if (removeArticle <= 0) {
+        return Promise.reject({ msg: "Article ID Not Found", status: 404 });
+      }
+    });
+}
+
+function createAnArticle(article) {
+  const { author, title, topic, body } = article;
+
+  return connection("articles")
+    .insert({
+      author: author,
+      title: title,
+      topic: topic,
+      body: body
+    })
+    .returning("*")
+    .then(newArticle => {
+      return newArticle;
+    });
+}
+
 module.exports = {
   fetchArticleId,
   updateArticleVote,
   createArticleComment,
   fetchCommentsById,
   fetchArticles,
-  checkIfExists
+  checkIfExists,
+  removeArticleById,
+  createAnArticle
 };

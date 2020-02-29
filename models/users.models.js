@@ -1,5 +1,28 @@
 const connection = require("../db/connection.js");
 
+function fetchAllUsers() {
+  return connection
+    .select("*")
+    .from("users")
+    .then(allUsers => {
+      return allUsers;
+    });
+}
+
+function createAUser(username, avatar_url, name) {
+  return connection("users")
+    .insert({
+      username: username,
+      avatar_url: avatar_url,
+      name: name
+    })
+    .into("users")
+    .returning("*")
+    .then(newUser => {
+      return newUser;
+    });
+}
+
 function fetchUserByUsername(username) {
   const regex = /\d/g;
 
@@ -20,4 +43,4 @@ function fetchUserByUsername(username) {
     });
 }
 
-module.exports = { fetchUserByUsername };
+module.exports = { fetchAllUsers, createAUser, fetchUserByUsername };

@@ -10,4 +10,17 @@ function fetchTopics() {
     });
 }
 
-module.exports = { fetchTopics };
+function createATopic(slug, description) {
+  return connection("topics")
+    .insert({
+      slug: slug,
+      description: description
+    })
+    .into("topics")
+    .returning("*")
+    .then(newTopic => {
+      return newTopic;
+    });
+}
+
+module.exports = { fetchTopics, createATopic };

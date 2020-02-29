@@ -3,7 +3,9 @@ const {
   updateArticleVote,
   createArticleComment,
   fetchCommentsById,
-  fetchArticles
+  fetchArticles,
+  removeArticleById,
+  createAnArticle
 } = require("../models/article.models");
 
 function getArticleId(req, res, next) {
@@ -65,10 +67,34 @@ function getArticles(req, res, next) {
     });
 }
 
+function deleteArticleById(req, res, next) {
+  const { article_id } = req.params;
+
+  removeArticleById(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(err => {
+      next(err);
+    });
+}
+
+function postArticle(req, res, next) {
+  createAnArticle(req.body)
+    .then(article => {
+      res.status(200).send({ article });
+    })
+    .catch(err => {
+      next(err);
+    });
+}
+
 module.exports = {
   getArticleId,
   patchArticleVote,
   postArticleComment,
   getCommentsById,
-  getArticles
+  getArticles,
+  deleteArticleById,
+  postArticle
 };

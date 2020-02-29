@@ -15,7 +15,7 @@ describe("/api", () => {
   beforeEach(() => {
     return connection.seed.run();
   });
-  describe("Get all topics - /api/topics", () => {
+  describe("GET and POST: all topics - /api/topics", () => {
     it('GET: responds with status 200 and an array of topic objects which have "slug" and "description" as properties', () => {
       return request(app)
         .get("/api/topics")
@@ -25,8 +25,51 @@ describe("/api", () => {
           expect(response.body.topics).to.be.an("array");
         });
     });
+    it("POST: 200, responds with a new topic created", () => {
+      const newTopic = {
+        slug: "the French Revolution",
+        description: "Started in 1789"
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.have.key("topic");
+          expect(response.body.topic).to.be.an("array");
+          expect(response.body.topic[0]).to.be.an("object");
+
+          response.body.topic.forEach(keys => {
+            expect(keys).to.include.all.keys(["slug", "description"]);
+          });
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when the request body does not have a correct property", () => {
+      const newTopic = {
+        topicIdea: "History",
+        description: "Civil Rights Movement"
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when the request body is empty", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({})
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
     it("Status: 405 method not allowed", () => {
-      const invalidMethods = ["patch", "put", "post", "delete"];
+      const invalidMethods = ["patch", "put", "delete"];
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/topics")
@@ -39,7 +82,82 @@ describe("/api", () => {
     });
   });
 
-  describe("Get users by username - /api/users/:username", () => {
+  describe("GET AND POST: all users - /api/users", () => {
+    it("GET: 200, responds with all users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.have.key("users");
+          expect(response.body.users).to.be.an("array");
+          expect(response.body.users[0]).to.include.all.keys([
+            "username",
+            "avatar_url",
+            "name"
+          ]);
+        });
+    });
+    it("POST: 200 responds with a new user", () => {
+      const newUser = {
+        username: "pools",
+        avatar_url: "https://www.pool_s.com",
+        name: "Sam Pool"
+      };
+
+      return request(app)
+        .post("/api/users")
+        .send(newUser)
+        .expect(201)
+        .then(response => {
+          expect(response.body).to.have.key("user");
+          expect(response.body.user[0]).to.include.all.keys([
+            "username",
+            "avatar_url",
+            "name"
+          ]);
+          expect(response.body.user).to.be.an("array");
+          expect(response.body.user[0]).to.be.an("object");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when given wrong property names in the request body", () => {
+      const newUser = {
+        notARealColumnName: "ReecesPieces",
+        avatar_url: "https://www.reeceyboy.com",
+        name: "Reece"
+      };
+
+      return request(app)
+        .post("/api/users")
+        .expect(400)
+        .send(newUser)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when the request body is empty", () => {
+      return request(app)
+        .post("/api/users")
+        .send({})
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/users")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
+
+  describe("GET: users by username - /api/users/:username", () => {
     it('GET: responds with status 200 and returns an object with "username", "avatar_url", and "name" as properties and the users details when passed a username', () => {
       return request(app)
         .get("/api/users/butter_bridge")
@@ -83,7 +201,7 @@ describe("/api", () => {
     });
   });
 
-  describe("GET and PATCH articles by articles_id - /api/articles/:article_id", () => {
+  describe("GET and PATCH: articles by articles_id - /api/articles/:article_id", () => {
     it("GET: 200, responds with an article object when passed an article id", () => {
       return request(app)
         .get("/api/articles/1")
@@ -186,8 +304,29 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
+    it("DELETE: 204 deletes an article when passed an article id and responds with no content", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204);
+    });
+    it("DELETE ERROR: 404 responds with an error and appropriate message when passed a valid but non-existent article id", () => {
+      return request(app)
+        .delete("/api/articles/900")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Article ID Not Found");
+        });
+    });
+    it("DELETE ERROR: 400 responds with an error and appropriate message when passed invalid parameter", () => {
+      return request(app)
+        .delete("/api/articles/notAValidId")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
     it("Status: 405 method not allowed", () => {
-      const invalidMethods = ["put", "post", "delete"];
+      const invalidMethods = ["put", "post"];
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/articles/3")
@@ -200,7 +339,7 @@ describe("/api", () => {
     });
   });
 
-  describe("POST comments by article_id - /:articles_id/comments", () => {
+  describe("POST: comments by article_id - /:articles_id/comments", () => {
     it("POST: 201 posts a new comment in the comments table when passed an article id and a request body with username, and body inside", () => {
       return request(app)
         .post("/api/articles/9/comments")
@@ -293,7 +432,7 @@ describe("/api", () => {
     });
   });
 
-  describe("GET comments by article_id - /:article_id/comments", () => {
+  describe("GET: comments by article_id - /:article_id/comments", () => {
     it("GET: 200, responds with an array of comments for the given article_id that is sorted by the column specified", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=author&order=asc")
@@ -388,9 +527,21 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad Request");
         });
     });
+    it("Status: 405 method not allowed", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/articles/1/comments")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
 
-  describe("GET all articles - /api/articles", () => {
+  describe("GET and POST: all articles - /api/articles", () => {
     it("GET: 200 responds with an array of all article objects with a comment count in the object", () => {
       return request(app)
         .get("/api/articles")
@@ -541,8 +692,94 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Topic not found");
         });
     });
+    it("POST: 200 responds with a new article when passed in the correct properties in the request body", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        title: "Coding is fun",
+        topic: "paper",
+        body: "This is a test to post a new article"
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.have.key("article");
+          expect(response.body.article).to.be.an("array");
+          expect(response.body.article[0]).to.be.an("object");
+
+          response.body.article.forEach(keys => {
+            expect(keys).to.include.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at"
+            ]);
+          });
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when given wrong property names in the request body", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        title: "Coding is fun",
+        incorrectProperty: "paper",
+        bodyProperty: "This is a test to post a new article"
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("POST ERROR: 404 responds with an error and appropriate message when a property has a valid but non-existent topic and author", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        title: "Coding is fun",
+        topic: "food",
+        body: "This is a test to post a new article"
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not Found");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when a property is missed from the request body", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        topic: "mitch",
+        body: "This is an error test"
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
+    it("POST ERROR: 400 responds with an error and appropriate message when no information is placed in the request body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({})
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad Request");
+        });
+    });
     it("Status: 405 method not allowed", () => {
-      const invalidMethods = ["put", "post", "delete", "patch"];
+      const invalidMethods = ["put", "delete", "patch"];
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/articles")
@@ -555,7 +792,7 @@ describe("/api", () => {
     });
   });
 
-  describe("PATCH comment by comment_id - /api/comments/:comment_id", () => {
+  describe("PATCH: comment by comment_id - /api/comments/:comment_id", () => {
     it("PATCH: 200, responds with the updated comment when passed a comment_id with an indication to how much the votes property in the database should be updated by on the request body", () => {
       const updateComment = {
         inc_votes: 1
@@ -628,7 +865,7 @@ describe("/api", () => {
         });
     });
     it("Status: 405 method not allowed", () => {
-      const invalidMethods = ["post", "get"];
+      const invalidMethods = ["post", "get", "put"];
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/comments/1")
@@ -641,7 +878,7 @@ describe("/api", () => {
     });
   });
 
-  describe("DELETE comment by comment_id - /comments/:comment_id", () => {
+  describe("DELETE: comment by comment_id - /comments/:comment_id", () => {
     it("DELETE: 204, deletes the comment when passed a comment id and responds with no content", () => {
       return request(app)
         .delete("/api/comments/1")
@@ -664,7 +901,7 @@ describe("/api", () => {
         });
     });
     it("Status: 405 method not allowed", () => {
-      const invalidMethods = ["post", "get"];
+      const invalidMethods = ["post", "get", "put"];
       const methodPromises = invalidMethods.map(method => {
         return request(app)
           [method]("/api/comments/1")
