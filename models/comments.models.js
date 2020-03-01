@@ -7,7 +7,7 @@ function updateCommentVote(comment_id, newVote) {
     .returning("*")
     .then(commentResult => {
       if (commentResult.length === 0) {
-        return Promise.reject({ msg: "Not Found", status: 404 });
+        return Promise.reject({ msg: "Comment ID Not Found", status: 404 });
       }
       return commentResult[0];
     });
@@ -19,7 +19,7 @@ function removeCommentById(comment_id) {
     .del()
     .then(removeComment => {
       if (removeComment <= 0) {
-        return Promise.reject({ msg: "Not Found", status: 404 });
+        return Promise.reject({ msg: "Comment ID Not Found", status: 404 });
       }
     });
 }

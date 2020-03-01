@@ -228,7 +228,7 @@ describe("/api", () => {
         .get("/api/articles/900")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Not found");
+          expect(response.body.msg).to.equal("Article ID not found");
         });
     });
     it("GET ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
@@ -288,7 +288,7 @@ describe("/api", () => {
         .send(newVote)
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("ID not found");
+          expect(response.body.msg).to.equal("Article ID not found");
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
@@ -500,7 +500,7 @@ describe("/api", () => {
         .get("/api/articles/900/comments")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("ID not found");
+          expect(response.body.msg).to.equal("article not found");
         });
     });
     it("GET ERROR: 400 responds with an error and appropriate message when passed an invalid id", () => {
@@ -681,7 +681,7 @@ describe("/api", () => {
         .get("/api/articles?author=noface")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("User not found");
+          expect(response.body.msg).to.equal("user not found");
         });
     });
     it("GET ERROR: 404 responds with an error and appropriate message when passed a topic that does not exist", () => {
@@ -689,7 +689,7 @@ describe("/api", () => {
         .get("/api/articles?topic=brusselsprouts")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Topic not found");
+          expect(response.body.msg).to.equal("topic not found");
         });
     });
     it("POST: 200 responds with a new article when passed in the correct properties in the request body", () => {
@@ -848,7 +848,7 @@ describe("/api", () => {
         .send(newVote)
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Not Found");
+          expect(response.body.msg).to.equal("Comment ID Not Found");
         });
     });
     it("PATCH ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {
@@ -889,7 +889,7 @@ describe("/api", () => {
         .delete("/api/comments/900")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Not Found");
+          expect(response.body.msg).to.equal("Comment ID Not Found");
         });
     });
     it("DELETE ERROR: 400 responds with an error and appropriate message when passed an invalid parameter", () => {

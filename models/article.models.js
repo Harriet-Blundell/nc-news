@@ -9,7 +9,7 @@ function fetchArticleId(article_id) {
     .groupBy("articles.article_id")
     .then(articleId => {
       if (articleId.length === 0) {
-        return Promise.reject({ msg: "Not found", status: 404 });
+        return Promise.reject({ msg: "Article ID not found", status: 404 });
       }
       return articleId[0];
     });
@@ -22,7 +22,7 @@ function updateArticleVote(body, article_id) {
     .returning("*")
     .then(updateVote => {
       if (updateVote.length === 0) {
-        return Promise.reject({ msg: "ID not found", status: 404 });
+        return Promise.reject({ msg: "Article ID not found", status: 404 });
       }
       return updateVote[0];
     });
@@ -42,7 +42,7 @@ function createArticleComment(article_id, newComment) {
     });
 }
 
-function fetchCommentsById(sort_by, order, article_id) {
+function fetchCommentsByArticleId(sort_by, order, article_id) {
   return connection
     .select("comment_id", "votes", "created_at", "author", "body")
     .from("comments")
@@ -50,17 +50,8 @@ function fetchCommentsById(sort_by, order, article_id) {
     .orderBy(sort_by || "created_at", order || "desc")
     .then(commentOrdered => {
       if (commentOrdered.length === 0 && article_id !== undefined) {
-        return checkIfExists(article_id, "article_id", "articles").then(
-          articleIdComment => {
-            if (articleIdComment === true) {
-              return [];
-            } else {
-              return Promise.reject({ msg: "ID not found", status: 404 });
-            }
-          }
-        );
+        return checkIfExists(article_id, "article_id", "articles");
       }
-
       return commentOrdered;
     });
 }
@@ -88,32 +79,14 @@ function fetchArticles(sort_by, order, topic, author) {
     })
     .then(result => {
       if (result.length === 0 && author !== undefined) {
-        return checkIfExists(author, "username", "users").then(authorResult => {
-          if (authorResult === true) {
-            return result;
-          } else {
-            return Promise.reject({ msg: "User not found", status: 404 });
-          }
-        });
+        return checkIfExists(author, "username", "users");
       } else if (result.length === 0 && topic !== undefined) {
-        return checkIfExists(topic, "slug", "topics").then(topicResult => {
-          if (topicResult === true) {
-            return result;
-          } else {
-            return Promise.reject({ msg: "Topic not found", status: 404 });
-          }
-        });
+        return checkIfExists(topic, "slug", "topics");
       } else {
         return result;
       }
     });
 }
-
-// const checkIfAuthorExists = checkIfExists(author, "username", "users");
-
-// const checkIfTopicExists = checkIfExists(topic, "slug", "topics");
-
-// return Promise.all([result, checkIfAuthorExists, checkIfTopicExists]);
 
 function checkIfExists(value, column, table) {
   return connection
@@ -122,9 +95,12 @@ function checkIfExists(value, column, table) {
     .where(column, "=", value)
     .then(checkResult => {
       if (checkResult.length !== 0) {
-        return true;
+        return [];
       } else {
-        return false;
+        return Promise.reject({
+          msg: `${table.slice(0, -1)} not found`,
+          status: 404
+        });
       }
     });
 }
@@ -160,7 +136,7 @@ module.exports = {
   fetchArticleId,
   updateArticleVote,
   createArticleComment,
-  fetchCommentsById,
+  fetchCommentsByArticleId,
   fetchArticles,
   checkIfExists,
   removeArticleById,

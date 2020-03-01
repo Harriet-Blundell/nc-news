@@ -4,7 +4,7 @@ const {
   getArticleId,
   patchArticleVote,
   postArticleComment,
-  getCommentsById,
+  getCommentsByArticleId,
   getArticles,
   deleteArticleById,
   postArticle
@@ -30,7 +30,7 @@ articleRouter
 articleRouter
   .route("/:article_id/comments")
   .post(postArticleComment)
-  .get(checkForInvalidKeys, getCommentsById)
+  .get(checkForInvalidKeys, getCommentsByArticleId)
   .all(send405Error);
 
 module.exports = { articleRouter };

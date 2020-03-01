@@ -2,7 +2,7 @@ const {
   fetchArticleId,
   updateArticleVote,
   createArticleComment,
-  fetchCommentsById,
+  fetchCommentsByArticleId,
   fetchArticles,
   removeArticleById,
   createAnArticle
@@ -42,11 +42,11 @@ function postArticleComment(req, res, next) {
     });
 }
 
-function getCommentsById(req, res, next) {
+function getCommentsByArticleId(req, res, next) {
   const { article_id } = req.params;
   const { sort_by, order } = req.query;
 
-  fetchCommentsById(sort_by, order, article_id)
+  fetchCommentsByArticleId(sort_by, order, article_id)
     .then(comments => {
       res.status(200).send({ comments });
     })
@@ -93,7 +93,7 @@ module.exports = {
   getArticleId,
   patchArticleVote,
   postArticleComment,
-  getCommentsById,
+  getCommentsByArticleId,
   getArticles,
   deleteArticleById,
   postArticle

@@ -304,40 +304,22 @@ describe("formatComments", () => {
 });
 
 describe("Check If Exists", () => {
-  it("returns true if a user does exist in the user table", () => {
+  it("returns an empty array if a user does exist in the user table", () => {
     const column = "username";
     const table = "users";
     const value = "lurker";
 
-    return checkIfExists(value, column, table).then(response => {
-      expect(response).to.equal(true);
+    return checkIfExists(value, column, table).then(result => {
+      return expect(result).to.deep.equal([]);
     });
   });
-  it("returns false if a user does not exist in the user table", () => {
-    const column = "username";
-    const table = "users";
-    const value = "conrad";
-
-    return checkIfExists(value, column, table).then(response => {
-      expect(response).to.equal(false);
-    });
-  });
-  it("returns true if a topic does exist in the topic table", () => {
+  it("returns an empty array if a topic does exist in the topic table", () => {
     const column = "slug";
     const table = "topics";
     const value = "cats";
 
     return checkIfExists(value, column, table).then(response => {
-      expect(response).to.equal(true);
-    });
-  });
-  it("returns false if a topic does not exist in the topic table", () => {
-    const column = "slug";
-    const table = "topics";
-    const value = "dog";
-
-    return checkIfExists(value, column, table).then(response => {
-      expect(response).to.equal(false);
+      expect(response).to.deep.equal([]);
     });
   });
 });
