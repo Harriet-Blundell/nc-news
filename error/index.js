@@ -25,6 +25,10 @@ function handlePSQLErrors(err, req, res, next) {
   }
 }
 
+function routeError(err, req, res, next) {
+  res.status(404).send({ msg: "Page Not Found" });
+}
+
 function send405Error(req, res, next) {
   res.status(405).send({ msg: "Method Not Allowed" });
 }
@@ -37,5 +41,6 @@ module.exports = {
   handleCustomErrors,
   handlePSQLErrors,
   handleServerErrors,
-  send405Error
+  send405Error,
+  routeError
 };
