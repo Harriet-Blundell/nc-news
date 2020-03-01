@@ -692,7 +692,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("topic not found");
         });
     });
-    it("POST: 200 responds with a new article when passed in the correct properties in the request body", () => {
+    it("POST: 201 responds with a new article when passed in the correct properties in the request body", () => {
       const newArticle = {
         author: "butter_bridge",
         title: "Coding is fun",
@@ -703,7 +703,7 @@ describe("/api", () => {
       return request(app)
         .post("/api/articles")
         .send(newArticle)
-        .expect(200)
+        .expect(201)
         .then(response => {
           expect(response.body).to.have.key("article");
           expect(response.body.article).to.be.an("array");
