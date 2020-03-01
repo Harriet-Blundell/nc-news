@@ -97,7 +97,7 @@ describe("/api", () => {
           ]);
         });
     });
-    it("POST: 200 responds with a new user", () => {
+    it("POST: 201 responds with a new user", () => {
       const newUser = {
         username: "pools",
         avatar_url: "https://www.pool_s.com",
