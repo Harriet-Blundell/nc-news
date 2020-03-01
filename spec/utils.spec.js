@@ -6,6 +6,8 @@ const {
   formatComments
 } = require("../db/utils/utils");
 
+const connection = require("../db/connection.js");
+
 const { checkIfExists } = require("../models/article.models");
 
 describe("formatDates", () => {
@@ -304,6 +306,10 @@ describe("formatComments", () => {
 });
 
 describe("Check If Exists", () => {
+  after(() => {
+    return connection.destroy();
+  });
+
   it("returns an empty array if a user does exist in the user table", () => {
     const column = "username";
     const table = "users";
