@@ -25,7 +25,7 @@ function handlePSQLErrors(err, req, res, next) {
   }
 }
 
-function routeError(err, req, res, next) {
+function routeError(req, res, next) {
   res.status(404).send({ msg: "Page Not Found" });
 }
 
