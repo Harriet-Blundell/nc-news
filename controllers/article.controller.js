@@ -82,7 +82,7 @@ function deleteArticleById(req, res, next) {
 function postArticle(req, res, next) {
   createAnArticle(req.body)
     .then(article => {
-      res.status(200).send({ article });
+      res.status(201).send({ article });
     })
     .catch(err => {
       next(err);
