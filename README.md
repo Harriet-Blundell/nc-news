@@ -136,9 +136,7 @@ Below will show examples of what the endpoints will respond with when you make a
 GET /api/topics - GET all the topics
 ```
 
-Responds with:
-
-- an array of topic objects:
+Responds with an array of topic objects:
 
 ```bash
 {
