@@ -2,15 +2,15 @@
 
 ## Contents:
 
-- General Information
-- Getting Started
-- Prerequisites
-- Installing
-- Running the tests
-- Deployment
-- Built With
-- RESTful API
-- Acknowledgements
+- [General Information](#general-information)
+- [Getting Started](#Getting-Started)
+- [Prerequisites](#Prerequisites)
+- [Installing](#installing)
+- [Running the tests](#running-the-tests)
+- [Deployment](#deployment)
+- [Built With](#Built-With)
+- [RESTful API](#restful-api)
+- [Acknowledgements](#acknowledgements)
 
 ## General Information:
 
