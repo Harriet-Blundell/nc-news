@@ -5,7 +5,6 @@
 - [General Information](#general-information)
 - [Getting Started](#Getting-Started)
 - [Prerequisites](#Prerequisites)
-- [Installing](#installing)
 - [Running the tests](#running-the-tests)
 - [Deployment](#deployment)
 - [Built With](#Built-With)
@@ -22,7 +21,7 @@ For this project, I used PostgreSQL database to store the data and interacted wi
 
 The link to my Heroku API is: http://harrietblundell-be-nc-news.herokuapp.com/api
 
-## Step 1 - Getting Started:
+## Getting Started:
 
 This section will explain how you can get a copy of this repository to run on your machine.
 
@@ -36,7 +35,7 @@ git clone <link>
 cd <name of folder>
 ```
 
-## Step 2 - Prerequisites:
+## Prerequisites:
 
 In order to get started, you will need Node.js and NPM installed on your machine.
 
@@ -82,7 +81,7 @@ nodemon v2.0.1
 supertest v4.0.2
 ```
 
-## Step 3 - Running the tests:
+## Running the tests:
 
 Run the following command in your terminal to test all of the endpoints:
 
@@ -90,7 +89,7 @@ Run the following command in your terminal to test all of the endpoints:
 npm test
 ```
 
-## Step 4 - Built With:
+## Built With:
 
 - JavaScript
 - PostgreSQL database - Used to create the database
@@ -101,7 +100,7 @@ npm test
 
 I used Heroku because it allowed for easy database integration and a service that I could push my code to, build it, and host my API.
 
-## Step 5 - RESTful API:
+## RESTful API:
 
 This section will explain all the available endpoints in this RESTful API.
 
