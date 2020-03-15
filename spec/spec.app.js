@@ -179,14 +179,6 @@ describe('/api', () => {
           expect(response.body.msg).to.equal('Username not found');
         });
     });
-    it('GET ERROR: 400 responds with an error and appropriate message when passed an invalid parameter as username', () => {
-      return request(app)
-        .get('/api/users/999')
-        .expect(400)
-        .then(response => {
-          expect(response.body.msg).to.equal('Bad Request');
-        });
-    });
     it('Status: 405 method not allowed', () => {
       const invalidMethods = ['patch', 'put', 'post', 'delete'];
       const methodPromises = invalidMethods.map(method => {
