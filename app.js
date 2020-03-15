@@ -1,21 +1,25 @@
-const express = require("express");
+const express = require('express');
 
 const app = express();
 
-const apiRouter = require("./router/apiRouter.js");
+const apiRouter = require('./router/apiRouter.js');
+
+const cors = require('cors');
 
 const {
   handleCustomErrors,
   handlePSQLErrors,
   handleServerErrors,
   routeError
-} = require("./error/index.js");
+} = require('./error/index.js');
+
+app.use(cors());
 
 app.use(express.json());
 
-app.use("/api", apiRouter);
+app.use('/api', apiRouter);
 
-app.use("/*", routeError);
+app.use('/*', routeError);
 
 app.use(handleCustomErrors);
 

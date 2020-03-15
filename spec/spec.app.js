@@ -36,7 +36,6 @@ describe('/api', () => {
         .send(newTopic)
         .expect(200)
         .then(response => {
-          console.log(response.body);
           expect(response.body).to.have.key('topic');
           expect(response.body.topic).to.be.an('array');
           expect(response.body.topic[0]).to.be.an('object');
