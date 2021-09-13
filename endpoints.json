@@ -6,12 +6,22 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {
+          "slug": "football",
+          "description": "Footie!"
+        }
+      ]
     }
   },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [
+      "author",
+      "topic",
+      "sort_by",
+      "order"
+    ],
     "exampleResponse": {
       "articles": [
         {
@@ -25,9 +35,11 @@
     }
   },
   "GET /api/users/:username": {
-    "description": "serves up an array object of of the user by the user id",
+    "description": "serves up an array object of the user by the user id",
     "queries": [],
-    "params": ["user_id"],
+    "params": [
+      "user_id"
+    ],
     "exampleResponse": {
       "user": {
         "username": "jessjelly",
@@ -39,7 +51,9 @@
   "GET /api/articles/:article_id": {
     "description": "serves up an array object of the articles by article id",
     "queries": [],
-    "params": ["article_id"],
+    "params": [
+      "article_id"
+    ],
     "exampleResponse": {
       "article": {
         "article_id": 1,
@@ -56,8 +70,14 @@
   "PATCH /api/articles/:article_id": {
     "description": "updates the article id's vote property's value",
     "queries": [],
-    "body": [{ "inc_votes": 7 }],
-    "params": ["article_id"],
+    "body": [
+      {
+        "inc_votes": 7
+      }
+    ],
+    "params": [
+      "article_id"
+    ],
     "exampleResponse": {
       "article": {
         "article_id": 1,
@@ -73,8 +93,15 @@
   "POST /api/articles/1/comments": {
     "description": "updates the body property with a new comment for specified article id",
     "queries": [],
-    "params": ["article_id"],
-    "body": [{ "username": "jessjelly", "body": "I am posting a new comment" }],
+    "params": [
+      "article_id"
+    ],
+    "body": [
+      {
+        "username": "jessjelly",
+        "body": "I am posting a new comment"
+      }
+    ],
     "exampleResponse": {
       "comment": {
         "comment_id": 302,
@@ -88,7 +115,10 @@
   },
   "GET /api/articles/1/comments": {
     "description": "serves up an array of comment objects sorted by a column and ordered asc or desc",
-    "queries": ["sort_by", "order_by"],
+    "queries": [
+      "sort_by",
+      "order_by"
+    ],
     "params": [],
     "body": [],
     "exampleResponse": {
@@ -106,8 +136,14 @@
   "PATCH /api/comments/:comment_id": {
     "description": "serves up an array comment object with the vote property value updated",
     "queries": [],
-    "params": ["comment_id"],
-    "body": [{ "inc_votes": 2 }],
+    "params": [
+      "comment_id"
+    ],
+    "body": [
+      {
+        "inc_votes": 2
+      }
+    ],
     "exampleResponse": {
       "comments": {
         "comment_id": 1,
@@ -122,14 +158,21 @@
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment when passed an id and serves up no body for response",
     "queries": [],
-    "params": ["comment_id"],
+    "params": [
+      "comment_id"
+    ],
     "body": []
   },
   "POST /api/articles": {
     "description": "creates a new article",
     "queries": [],
     "params": [],
-    "body": ["author", "title", "body", "topic"],
+    "body": [
+      "author",
+      "title",
+      "body",
+      "topic"
+    ],
     "exampleResponse": {
       "article": [
         {
@@ -147,14 +190,19 @@
   "DELETE /api/articles/:article_id": {
     "description": "deletes an article by an article id and serves up no body for a response",
     "queries": [],
-    "params": ["article_id"],
+    "params": [
+      "article_id"
+    ],
     "body": []
   },
   "POST /api/topics": {
     "description": "posts a new topic",
     "queries": [],
     "params": [],
-    "body": ["slugs", "description"],
+    "body": [
+      "slugs",
+      "description"
+    ],
     "exampleResponse": {
       "topic": [
         {
@@ -168,7 +216,11 @@
     "description": "creates a new user",
     "queries": [],
     "params": [],
-    "body": ["username", "avatar_url", "name"],
+    "body": [
+      "username",
+      "avatar_url",
+      "name"
+    ],
     "exampleResponse": {
       "user": [
         {
