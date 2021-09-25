@@ -19,7 +19,7 @@ It will serve as a social news aggregate website where users can rate content an
 
 For this project, I used PostgreSQL database to store the data and interacted with it by using Knex.js for query building and migrations.
 
-The link to my Heroku API is: http://harrietblundell-be-nc-news.herokuapp.com/api
+The link to my Heroku API is: http://harriet-blundell-be-nc-news.herokuapp.com/api
 
 ## Getting Started:
 
